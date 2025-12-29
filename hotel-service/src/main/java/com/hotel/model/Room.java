@@ -7,15 +7,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document("Room")
+@Document(collection = "rooms")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Room {
-	@Id
-	private String id;
-	private String room_number;
-	private RSTATUS status;
-	private String hotel_id;
-	private String category_id;
+
+    @Id
+    private String id;
+    private String roomNumber;
+    private String hotelId;
+    private RSTATUS status;  
+    private RTYPE type;
+    private Double price;
 }
