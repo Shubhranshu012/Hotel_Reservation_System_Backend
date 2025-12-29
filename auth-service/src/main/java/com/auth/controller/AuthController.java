@@ -53,6 +53,7 @@ public class AuthController {
         }
 		Map<String,String> responce=new HashMap<>();
 		responce.put("Token",jwtService.generateToken(request.getEmail(),users.get().getRole()));
+		responce.put("role", users.get().getRole().toString());
 		return ResponseEntity.status(200).body(responce);
 	}
 	
