@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Hotels {
 	@Id
-	private String hotelId;
+	private String id;
 	private String hotelName;
 	private String city;
 	private String address;

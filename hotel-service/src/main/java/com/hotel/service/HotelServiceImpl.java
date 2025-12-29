@@ -2,12 +2,15 @@ package com.hotel.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.hotel.dto.InventoryRequest;
-import com.hotel.exception.HotelNotFoundException;
+import com.hotel.exception.NotFoundException;
 import com.hotel.model.HSTATUS;
 import com.hotel.model.Hotels;
 import com.hotel.repository.HotelRepository;
 
+@Service
 public class HotelServiceImpl implements HotelService {
 	@Autowired
 	HotelRepository hotelRepository;
@@ -26,11 +29,11 @@ public class HotelServiceImpl implements HotelService {
         
     }
 	 @Override
-	    public void deleteHotel(Long hotelId) {
+	    public void deleteHotel(String hotelId) {
 
 	        Hotels hotel = hotelRepository
 	                .findByIdAndStatus(hotelId, HSTATUS.ACTIVE)
-	                .orElseThrow(() -> new HotelNotFoundException("Active hotel not found"));
+	                .orElseThrow(() -> new NotFoundException());
 
 	        hotel.setStatus(HSTATUS.INACTIVE);
 	        hotelRepository.save(hotel);
