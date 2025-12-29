@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth.dto.ChangeRequest;
@@ -18,15 +19,15 @@ import com.auth.dto.LoginRequest;
 import com.auth.model.User;
 import com.auth.repository.UserRepository;
 import com.auth.security.JwtService;
-
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
     PasswordEncoder passwordEncoder;
 	@Autowired
-    JwtService jwtService;
+	JwtService jwtService;
 	
 	@PostMapping("/register")
 	public ResponseEntity<Void> register(@RequestBody User user) {
