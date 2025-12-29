@@ -8,13 +8,13 @@ import lombok.Data;
 @Data
 public class InventoryRequest {
 
-    @NotBlank(message = "Hotel name is required")
+    @NotNull(message = "Hotel name is required")
     private String hotelName;
 
-    @NotBlank(message = "City is required")
+    @NotNull(message="City is required")
     private String city;
 
-    @NotBlank(message = "Address is required")
+    @NotNull(message="Address is required")
     private String address;
 
     @NotNull(message = "Number of rooms is required")

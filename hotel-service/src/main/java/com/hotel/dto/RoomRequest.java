@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RoomRequest {
 
-    @NotBlank(message = "Room number is required")
+    @NotNull(message = "Room number is required")
     private String roomNumber;
 
-    @NotBlank(message = "Hotel ID is required")
+    @NotNull(message = "Hotel ID is required")
     private String hotelId;
 
     @NotNull(message = "Room status is required")

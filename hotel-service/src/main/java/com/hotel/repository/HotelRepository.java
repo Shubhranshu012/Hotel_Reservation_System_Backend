@@ -12,4 +12,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface HotelRepository extends MongoRepository<Hotels,String>{
 	Optional<Hotels> findByIdAndStatus(String id, HSTATUS status);
 	Optional<Hotels> findById(String id);
+	Hotels findByHotelNameAndCityAndAddress(String hotelName,String city,String address);
 }
