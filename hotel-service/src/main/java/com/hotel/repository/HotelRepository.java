@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import com.hotel.model.HSTATUS;
 import com.hotel.model.Hotels;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -13,4 +14,5 @@ public interface HotelRepository extends MongoRepository<Hotels,String>{
 	Optional<Hotels> findByIdAndStatus(String id, HSTATUS status);
 	Optional<Hotels> findById(String id);
 	Hotels findByHotelNameAndCityAndAddress(String hotelName,String city,String address);
+	List<Hotels> findByCityAndStatus(String city, HSTATUS status);
 }

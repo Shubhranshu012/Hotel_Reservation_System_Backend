@@ -20,5 +20,6 @@ public class Hotels {
 	private String city;
 	private String address;
 	private Integer numberOfRooms;
+	private Integer booked;
 	private HSTATUS status;
 }
