@@ -16,6 +16,7 @@ import com.hotel.dto.InventoryRequest;
 import com.hotel.dto.RoomRequest;
 import com.hotel.dto.UpdateRoomRequest;
 import com.hotel.model.Hotels;
+import com.hotel.model.Room;
 import com.hotel.service.HotelServiceImpl;
 import com.hotel.service.RoomServiceImpl;
 
@@ -62,5 +63,11 @@ public class HotelController {
 			@PathVariable String hotelId, @PathVariable String roomId) {
 		roomService.updateRoom(hotelId, roomId, request);
 		return ResponseEntity.status(200).build();
+	}
+	
+	@GetMapping("/hotel/{hotelId}/room/{roomId}")
+	private ResponseEntity<Room> getRoom(@PathVariable String hotelId, @PathVariable String roomId) {
+		Room room = roomService.getRoom(hotelId, roomId);roomService.getRoom(hotelId, roomId);
+		return ResponseEntity.status(200).body(room);
 	}
 }
