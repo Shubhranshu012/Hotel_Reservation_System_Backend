@@ -7,7 +7,6 @@ import lombok.Data;
 
 @Data
 public class BookingRequest {
-    private String hotelId;
     private String roomId;
     private String guestName;
     private String guestEmail;

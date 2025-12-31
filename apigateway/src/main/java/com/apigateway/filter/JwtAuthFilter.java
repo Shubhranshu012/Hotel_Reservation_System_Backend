@@ -74,6 +74,10 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         if(path.startsWith("/HOTEL-SERVICE/hotel") && role.equals("ADMIN") && method == HttpMethod.POST){
         	return chain.filter(exchange);
         }
+        //3.Delete hotel
+        if(path.matches("/HOTEL-SERVICE/hotel/[^/]+") && role.equals("ADMIN") && method == HttpMethod.DELETE){
+        	return chain.filter(exchange);
+        }
         //3.Update hotel (Manager/Admin)
         if(path.matches("/HOTEL-SERVICE/hotel/[^/]+") && (role.equals("ADMIN") || role.equals("MANAGER")) && method == HttpMethod.PUT){
         	if(role.equals("ADMIN")){
@@ -103,15 +107,33 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
         
-        
-        
+        // booking
+        if (path.matches("/BOOKING-SERVICE/api/booking/[^/]+") && method == HttpMethod.POST && (role.equals("USER") || role.equals("RECEPTIONIST"))) {
+            if(role.equals("USER")){
+        		return chain.filter(exchange);
+        	}
+        	else {
+        		String[] parts = path.split("/");
+        		String hotelIdFromPath = parts[4]; 
 
-        if (path.startsWith("/BOOKINGSERVICE") && !role.equals("USER")) {
-            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-            return exchange.getResponse().setComplete();
+                if (hotelIdFromPath.equals(hotelId)) { 
+                    return chain.filter(exchange);
+                }
+                else {
+                    exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                    return exchange.getResponse().setComplete();
+                }
+        	}
         }
-
-        return chain.filter(exchange);
+        
+        // Cancel Booking 
+        if (path.matches("/BOOKING-SERVICE/api/booking/[^/]+cancel") && method == HttpMethod.PUT && (role.equals("USER"))) {
+            return chain.filter(exchange);
+        }
+        
+       
+        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+        return exchange.getResponse().setComplete();
     }
 
     @Override

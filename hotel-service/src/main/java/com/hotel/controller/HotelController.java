@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,6 +46,12 @@ public class HotelController {
 	    return ResponseEntity.ok().build();
 	}
 	
+	@DeleteMapping("/hotel/{hotelId}")
+	public ResponseEntity<Void> deleteHotel(@PathVariable String hotelId) {
+	    hotelService.deleteHotel(hotelId);
+	    return ResponseEntity.ok().build();
+	}
+	
 	//Admin (Added)
 	@GetMapping("/hotel/all")
 	private ResponseEntity<List<Hotels>> getAllHotels() {
@@ -76,11 +83,13 @@ public class HotelController {
 	}
 	
 	
+	//Public (Added)
 	@GetMapping("/search")
 	private ResponseEntity<List<Hotels>> searchHotels(@RequestBody @Valid HotelSearchRequest request) {
 		List<Hotels> hotels=hotelService.searchHotels(request);
 		return ResponseEntity.status(200).body(hotels);
 	}
+	//Public ( Added )
 	@GetMapping("/{hotelId}/rooms/available")
     public ResponseEntity<List<Room>> getAvailableRooms(@PathVariable String hotelId,@RequestBody RoomAvailabilityRequest request) {
 		List<Room> rooms= hotelService.getAvailableRooms(hotelId,request.getCheckIn(),request.getCheckOut());

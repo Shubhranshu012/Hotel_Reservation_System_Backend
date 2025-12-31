@@ -11,9 +11,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface BookingFeignClient {
 
     @GetMapping("/api/booking/booked-rooms")
-    List<String> getBookedRooms(
-            @RequestParam String hotelId,
-            @RequestParam LocalDate checkIn,
-            @RequestParam LocalDate checkOut
-    );
+    List<String> getBookedRooms(@RequestParam String hotelId,@RequestParam LocalDate checkIn, @RequestParam LocalDate checkOut);
 }

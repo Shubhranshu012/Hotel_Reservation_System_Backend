@@ -17,13 +17,14 @@ public class BookingController {
 	@Autowired
     private BookingService bookingService;
     
-    @PostMapping
-    public ResponseEntity<BookingResponse> bookRoom(
-        @RequestBody BookingRequest request) {
-        BookingResponse response = bookingService.createBooking(request);
+	//User/RECEPTIONIST (Added)
+    @PostMapping("/{hotelId}")
+    public ResponseEntity<BookingResponse> bookRoom( @RequestBody BookingRequest request,@PathVariable String hotelId) {
+        BookingResponse response = bookingService.createBooking(request,hotelId);
         return ResponseEntity.status(201).body(response);
     }
-
+    
+    //User (Added)
     @PutMapping("/{reservationId}/cancel")
     public ResponseEntity<Void> cancelBooking(@PathVariable String reservationId) {
 
@@ -31,6 +32,7 @@ public class BookingController {
         return ResponseEntity.ok().build();
     }
     
+    //internal 
     @GetMapping("/booked-rooms")
     public List<String> getBookedRooms(@RequestParam String hotelId,@RequestParam LocalDate checkIn,@RequestParam LocalDate checkOut) {
         return bookingService.getBookedRoomIds(hotelId, checkIn, checkOut);

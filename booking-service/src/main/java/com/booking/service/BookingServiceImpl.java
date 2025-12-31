@@ -24,16 +24,16 @@ public class BookingServiceImpl implements BookingService {
 	private HotelFeignClient hotelClient;
 
 	@Override
-	public BookingResponse createBooking(BookingRequest request) {
+	public BookingResponse createBooking(BookingRequest request,String hotelId) {
 
-		RoomResponse room = hotelClient.getRoom(request.getHotelId(), request.getRoomId());
+		RoomResponse room = hotelClient.getRoom(hotelId, request.getRoomId());
 
 		if (!"AVAILABLE".equals(room.getStatus())) {
 			throw new RuntimeException("Room not available");
 		}
 
 		Reservation reservation = new Reservation();
-		reservation.setHotelId(request.getHotelId());
+		reservation.setHotelId(hotelId);
 		reservation.setRoomId(request.getRoomId());
 		reservation.setGuestName(request.getGuestName());
 		reservation.setGuestEmail(request.getGuestEmail());
