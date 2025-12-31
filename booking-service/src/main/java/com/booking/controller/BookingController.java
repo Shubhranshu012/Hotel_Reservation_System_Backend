@@ -1,5 +1,8 @@
 package com.booking.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,5 +29,10 @@ public class BookingController {
 
     	bookingService.cancelBooking(reservationId);
         return ResponseEntity.ok().build();
+    }
+    
+    @GetMapping("/booked-rooms")
+    public List<String> getBookedRooms(@RequestParam String hotelId,@RequestParam LocalDate checkIn,@RequestParam LocalDate checkOut) {
+        return bookingService.getBookedRoomIds(hotelId, checkIn, checkOut);
     }
 }

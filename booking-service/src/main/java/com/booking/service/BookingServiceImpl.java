@@ -1,6 +1,9 @@
 package com.booking.service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.booking.dto.BookingRequest;
@@ -52,4 +55,11 @@ public class BookingServiceImpl implements BookingService {
 		reservation.setStatus(RSTATUS.CANCELLED);
 		repository.save(reservation);
 	}
+
+    @Override
+    public List<String> getBookedRoomIds(String hotelId,LocalDate checkIn,LocalDate checkOut) {
+
+        List<Reservation> reservations =repository.findByHotelIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(hotelId,List.of(RSTATUS.BOOKED,RSTATUS.CONFIRMED,RSTATUS.CHECKED_IN),checkIn,checkOut);
+        return reservations.stream().map(Reservation::getRoomId).distinct().collect(Collectors.toList());
+    }
 }

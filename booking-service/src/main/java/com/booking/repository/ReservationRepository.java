@@ -5,10 +5,11 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import com.booking.model.RSTATUS;
 import com.booking.model.Reservation;
 
 public interface ReservationRepository extends MongoRepository<Reservation, String> {
 
-    List<Reservation> findByRoomIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(
-        String roomId,List<String> status,LocalDate checkIn,LocalDate checkOut);
+    List<Reservation> findByRoomIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(String roomId,List<String> status,LocalDate checkIn,LocalDate checkOut);
+    List<Reservation> findByHotelIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(String hotelId,List<RSTATUS> status,LocalDate checkIn,LocalDate checkOut);
 }

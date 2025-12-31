@@ -12,9 +12,6 @@ import lombok.Data;
 public class UpdateRoomRequest {
 	
 
-    @NotNull(message = "Hotel ID is required")
-    private String hotelId;
-
     @NotNull(message = "Room status is required")
     private RSTATUS status;
 

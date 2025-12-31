@@ -1,6 +1,7 @@
 package com.hotel.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,19 +10,27 @@ import com.hotel.dto.HotelSearchRequest;
 import com.hotel.dto.InventoryRequest;
 import com.hotel.exception.BadRequestException;
 import com.hotel.exception.NotFoundException;
+import com.hotel.feign.BookingFeignClient;
 import com.hotel.model.HSTATUS;
 import com.hotel.model.Hotels;
+import com.hotel.model.Room;
 import com.hotel.repository.HotelRepository;
+import com.hotel.repository.RoomRepository;
 
 @Service
 public class HotelServiceImpl implements HotelService {
 	@Autowired
 	HotelRepository hotelRepository;
-
+	
+	@Autowired
+	RoomRepository roomRepository;
+	
+	@Autowired
+    private BookingFeignClient bookingClient;
+	
 	@Override
 	public void createHotel(InventoryRequest request) {
-		Hotels hotels = hotelRepository.findByHotelNameAndCityAndAddress(request.getHotelName(), request.getCity(),
-				request.getAddress());
+		Hotels hotels = hotelRepository.findByHotelNameAndCityAndAddress(request.getHotelName(), request.getCity(),request.getAddress());
 		if (hotels != null) {
 			throw new BadRequestException("Hotel Exists With the Same name and Address");
 		}
@@ -35,8 +44,7 @@ public class HotelServiceImpl implements HotelService {
 	@Override
 	public void deleteHotel(String hotelId) {
 
-		Hotels hotel = hotelRepository.findByIdAndStatus(hotelId, HSTATUS.ACTIVE)
-				.orElseThrow(() -> new NotFoundException());
+		Hotels hotel = hotelRepository.findByIdAndStatus(hotelId, HSTATUS.ACTIVE).orElseThrow(() -> new NotFoundException());
 
 		hotel.setStatus(HSTATUS.INACTIVE);
 		hotelRepository.save(hotel);
@@ -49,17 +57,19 @@ public class HotelServiceImpl implements HotelService {
 		}
 		return hotels;
 	}
-	public List<Hotels> searchHotels(HotelSearchRequest request) {
+	
+	@Override
+	public List<Hotels> searchHotels(HotelSearchRequest request){
 
-	    int requiredRooms = request.getRooms();
-	    List<Hotels> hotels =hotelRepository.findByCityAndStatus(request.getCity(), HSTATUS.ACTIVE);
+        List<Hotels> hotels = hotelRepository.findByCityAndStatus(request.getCity(),HSTATUS.ACTIVE);
 
-	    return hotels.stream()
-	            .filter(hotel -> {
-	                int availableRooms = hotel.getNumberOfRooms() - hotel.getBooked();
-	                return availableRooms >= requiredRooms;
-	            })
-	            .toList();
-	}
-
+        return hotels.stream()
+                .filter(hotel -> {
+                    List<Room> rooms = roomRepository.findByHotelId(hotel.getId());
+                    List<String> bookedRoomIds =bookingClient.getBookedRooms(hotel.getId(),request.getCheckIn(),request.getCheckOut());
+                    long availableRooms =rooms.stream().filter(room -> !bookedRoomIds.contains(room.getId())).count();
+                    return availableRooms >= request.getRoomCount();
+                })
+                .collect(Collectors.toList());
+    }
 }

@@ -44,11 +44,7 @@ public class HotelController {
 		List<Hotels> hotels=hotelService.getAll();
 		return ResponseEntity.status(200).body(hotels);
 	}
-	@GetMapping("/hotel")
-	private ResponseEntity<List<Hotels>> getHotels(@RequestBody @Valid HotelSearchRequest request) {
-		List<Hotels> hotels=hotelService.searchHotels(request);
-		return ResponseEntity.status(200).body(hotels);
-	}
+	
 	
 	@PostMapping("/hotel/{hotelId}/room")
 	private ResponseEntity<Void> addRooms(@RequestBody @Valid List<RoomRequest> request, @PathVariable String hotelId) {
@@ -69,5 +65,12 @@ public class HotelController {
 	private ResponseEntity<Room> getRoom(@PathVariable String hotelId, @PathVariable String roomId) {
 		Room room = roomService.getRoom(hotelId, roomId);roomService.getRoom(hotelId, roomId);
 		return ResponseEntity.status(200).body(room);
+	}
+	
+	
+	@GetMapping("/serch")
+	private ResponseEntity<List<Hotels>> searchHotels(@RequestBody @Valid HotelSearchRequest request) {
+		List<Hotels> hotels=hotelService.searchHotels(request);
+		return ResponseEntity.status(200).body(hotels);
 	}
 }
