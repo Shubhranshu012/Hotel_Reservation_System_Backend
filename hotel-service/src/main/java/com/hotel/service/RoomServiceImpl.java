@@ -25,7 +25,7 @@ public class RoomServiceImpl implements RoomService {
 	@Override
 	public Room createRoom(String hotelId, RoomRequest request) {
 
-		validateActiveHotel(hotelId);
+		Hotels hotel = validateActiveHotel(hotelId);
 
 		if (roomRepository.existsByHotelIdAndRoomNumber(hotelId, request.getRoomNumber())) {
 			throw new BadRequestException("Room number already exists for this hotel");
@@ -33,7 +33,9 @@ public class RoomServiceImpl implements RoomService {
 
 		Room room = Room.builder().hotelId(hotelId).roomNumber(request.getRoomNumber()).type(request.getType())
 				.status(RSTATUS.AVAILABLE).build();
-
+		
+		hotel.setNumberOfRooms(hotel.getNumberOfRooms() + 1);
+	    hotelRepository.save(hotel);
 		return roomRepository.save(room);
 	}
 

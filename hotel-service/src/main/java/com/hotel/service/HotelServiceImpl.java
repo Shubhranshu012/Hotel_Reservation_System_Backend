@@ -1,5 +1,6 @@
 package com.hotel.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.hotel.dto.HotelSearchRequest;
 import com.hotel.dto.InventoryRequest;
+import com.hotel.dto.UpdateHotelRequest;
 import com.hotel.exception.BadRequestException;
 import com.hotel.exception.NotFoundException;
 import com.hotel.feign.BookingFeignClient;
@@ -40,6 +42,28 @@ public class HotelServiceImpl implements HotelService {
 		hotelRepository.save(hotel);
 
 	}
+	@Override
+	public void updateHotel(String hotelId, UpdateHotelRequest request) {
+
+	    Hotels hotel = hotelRepository
+	            .findByIdAndStatus(hotelId, HSTATUS.ACTIVE)
+	            .orElseThrow(NotFoundException::new);
+
+	    if (request.getHotelName() != null) {
+	        hotel.setHotelName(request.getHotelName());
+	    }
+	    if (request.getCity() != null) {
+	        hotel.setCity(request.getCity());
+	    }
+	    if (request.getAddress() != null) {
+	        hotel.setAddress(request.getAddress());
+	    }
+	    if (request.getNumberOfRooms() != null) {
+	        hotel.setNumberOfRooms(request.getNumberOfRooms());
+	    }
+
+	    hotelRepository.save(hotel);
+	}
 
 	@Override
 	public void deleteHotel(String hotelId) {
@@ -70,6 +94,16 @@ public class HotelServiceImpl implements HotelService {
                     long availableRooms =rooms.stream().filter(room -> !bookedRoomIds.contains(room.getId())).count();
                     return availableRooms >= request.getRoomCount();
                 })
+                .collect(Collectors.toList());
+    }
+	@Override
+    public List<Room> getAvailableRooms(String hotelId,LocalDate checkIn,LocalDate checkOut) {
+
+        List<Room> rooms = roomRepository.findByHotelId(hotelId);
+        List<String> bookedRoomIds =bookingClient.getBookedRooms(hotelId, checkIn, checkOut);
+
+        return rooms.stream()
+                .filter(room -> !bookedRoomIds.contains(room.getId()))
                 .collect(Collectors.toList());
     }
 }
