@@ -1,10 +1,9 @@
 package com.auth.controller;
 
-import java.time.LocalDateTime;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,8 +35,6 @@ public class AuthController {
 			throw new RuntimeException("Email Already Exists");
 		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		LocalDateTime newDate = LocalDateTime.now();
-        user.setLastDate(newDate);
 	    userRepository.save(user);
 		return ResponseEntity.status(201).build();
 	}
@@ -52,7 +49,7 @@ public class AuthController {
             throw new RuntimeException("Invalid Credentials");
         }
 		Map<String,String> responce=new HashMap<>();
-		responce.put("Token",jwtService.generateToken(request.getEmail(),users.get().getRole()));
+		responce.put("Token",jwtService.generateToken(request.getEmail(),users.get().getRole(),users.get().getHotelId()));
 		responce.put("role", users.get().getRole().toString());
 		return ResponseEntity.status(200).body(responce);
 	}
@@ -67,12 +64,10 @@ public class AuthController {
             throw new RuntimeException("Invalid Old PassWord");
         }
 		users.get().setPassword(passwordEncoder.encode(request.getNewPassword()));
-        LocalDateTime newDate = LocalDateTime.now();
-        users.get().setLastDate(newDate);
         userRepository.save(users.get());
-
         Map<String, String> response = new HashMap<>();
         response.put("message", "Password updated successfully");
 		return ResponseEntity.status(200).body(response);
 	}
+	
 }

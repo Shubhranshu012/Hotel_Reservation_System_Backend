@@ -17,6 +17,6 @@ public class User {
     private String id;
     private String email;
     private String password;
-    private LocalDateTime lastDate;
+    private String hotelId;
     private ROLE role; 
 }

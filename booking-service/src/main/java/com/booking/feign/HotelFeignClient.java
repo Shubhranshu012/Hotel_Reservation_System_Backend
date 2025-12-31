@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.booking.dto.RoomResponse;
 
-@FeignClient(name = "hotel-service", url = "http://localhost:8002")
+@FeignClient(name = "hotel-service")
 public interface HotelFeignClient {
 
-	@GetMapping("/api/hotel/{hotelId}/room/{roomId}")
+	@GetMapping("/hotel/{hotelId}/room/{roomId}")
     RoomResponse getRoom(@PathVariable String hotelId,@PathVariable String roomId);
 }

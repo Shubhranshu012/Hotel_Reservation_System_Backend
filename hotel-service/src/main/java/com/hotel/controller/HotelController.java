@@ -63,12 +63,12 @@ public class HotelController {
 	
 	@GetMapping("/hotel/{hotelId}/room/{roomId}")
 	private ResponseEntity<Room> getRoom(@PathVariable String hotelId, @PathVariable String roomId) {
-		Room room = roomService.getRoom(hotelId, roomId);roomService.getRoom(hotelId, roomId);
+		Room room = roomService.getRoom(hotelId, roomId);
 		return ResponseEntity.status(200).body(room);
 	}
 	
 	
-	@GetMapping("/serch")
+	@GetMapping("/search")
 	private ResponseEntity<List<Hotels>> searchHotels(@RequestBody @Valid HotelSearchRequest request) {
 		List<Hotels> hotels=hotelService.searchHotels(request);
 		return ResponseEntity.status(200).body(hotels);

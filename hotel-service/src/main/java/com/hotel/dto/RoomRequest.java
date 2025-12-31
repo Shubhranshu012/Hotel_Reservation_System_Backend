@@ -1,12 +1,9 @@
 package com.hotel.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-
 import com.hotel.model.RSTATUS;
 import com.hotel.model.RTYPE;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,9 +15,6 @@ public class RoomRequest {
 
     @NotNull(message = "Room number is required")
     private String roomNumber;
-
-    @NotNull(message = "Hotel ID is required")
-    private String hotelId;
 
     @NotNull(message = "Room status is required")
     private RSTATUS status;
