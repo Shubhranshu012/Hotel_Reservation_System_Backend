@@ -23,15 +23,17 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
         String path = exchange.getRequest().getURI().getPath();
         HttpMethod method = exchange.getRequest().getMethod();
-        //Register
+        //Register (User)
         if (path.contains("/auth-service/auth/register") &&  method == HttpMethod.POST) {
             return chain.filter(exchange); 
         }
         
-        //Login
+        //Login 
         if (path.contains("/auth-service/auth/login") &&  method == HttpMethod.POST) {
             return chain.filter(exchange); 
         }
+        
+        
         
         //Search Hotel
         if (path.startsWith("/hotel-service/search") &&  method == HttpMethod.POST) {
@@ -62,6 +64,15 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         } catch (Exception e) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
+        }
+        
+        //Register (Manager)
+        if (path.matches("/auth-service/auth/register/manager/[^/]+") &&  method == HttpMethod.POST && role.equals("ADMIN")) {
+            return chain.filter(exchange); 
+        }
+      	//Register (Receptionist)
+        if (path.matches("/auth-service/auth/register/receptionist/[^/]+") &&  method == HttpMethod.POST && role.equals("RECEPTIONIST")) {
+            return chain.filter(exchange); 
         }
         
         //Admin Function
