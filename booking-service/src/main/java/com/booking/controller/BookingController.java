@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +33,9 @@ public class BookingController {
         return ResponseEntity.ok().build();
     }
     
-    //internal 
+    //internal
     @GetMapping("/booked-rooms")
-    public List<String> getBookedRooms(@RequestParam String hotelId,@RequestParam LocalDate checkIn,@RequestParam LocalDate checkOut) {
+    public List<String> getBookedRooms(@RequestParam String hotelId,@RequestParam @DateTimeFormat(pattern = "M/d/yy") LocalDate checkIn,@RequestParam @DateTimeFormat(pattern = "M/d/yy") LocalDate checkOut) {
         return bookingService.getBookedRoomIds(hotelId, checkIn, checkOut);
     }
 }

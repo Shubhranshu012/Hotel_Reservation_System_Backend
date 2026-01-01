@@ -84,13 +84,13 @@ public class HotelController {
 	
 	
 	//Public (Added)
-	@GetMapping("/search")
+	@PostMapping("/search")
 	private ResponseEntity<List<Hotels>> searchHotels(@RequestBody @Valid HotelSearchRequest request) {
 		List<Hotels> hotels=hotelService.searchHotels(request);
 		return ResponseEntity.status(200).body(hotels);
 	}
 	//Public ( Added )
-	@GetMapping("/{hotelId}/rooms/available")
+	@PostMapping("/hotel/{hotelId}/rooms/available")
     public ResponseEntity<List<Room>> getAvailableRooms(@PathVariable String hotelId,@RequestBody RoomAvailabilityRequest request) {
 		List<Room> rooms= hotelService.getAvailableRooms(hotelId,request.getCheckIn(),request.getCheckOut());
         return ResponseEntity.status(200).body(rooms);

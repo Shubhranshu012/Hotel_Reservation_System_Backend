@@ -24,21 +24,21 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getPath();
         HttpMethod method = exchange.getRequest().getMethod();
         //Register
-        if (path.contains("/AUTH-SERVICE/auth/register") &&  method == HttpMethod.POST) {
+        if (path.contains("/auth-service/auth/register") &&  method == HttpMethod.POST) {
             return chain.filter(exchange); 
         }
         
         //Login
-        if (path.contains("/AUTH-SERVICE/auth/login") &&  method == HttpMethod.POST) {
+        if (path.contains("/auth-service/auth/login") &&  method == HttpMethod.POST) {
             return chain.filter(exchange); 
         }
         
         //Search Hotel
-        if (path.startsWith("/HOTEL-SERVICE/search") &&  method == HttpMethod.GET) {
+        if (path.startsWith("/hotel-service/search") &&  method == HttpMethod.POST) {
             return chain.filter(exchange);
         }
         //Get ALl Rooms based on HotelID
-        if (path.startsWith("/HOTEL-SERVICE/") && path.endsWith("/rooms/available") &&  method == HttpMethod.GET) {
+        if (path.matches("/hotel-service/hotel/[^/]+/rooms/available") &&  method == HttpMethod.POST) {
             return chain.filter(exchange);
         }
        
@@ -66,20 +66,20 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         
         //Admin Function
         //1.GET ALL Hotel
-        if(path.startsWith("/HOTEL-SERVICE/hotel/all") && role.equals("ADMIN") && method == HttpMethod.GET){
+        if(path.startsWith("/hotel-service/hotel/all") && role.equals("ADMIN") && method == HttpMethod.GET){
         	return chain.filter(exchange);
         }
         
         //2.Add hotel
-        if(path.startsWith("/HOTEL-SERVICE/hotel") && role.equals("ADMIN") && method == HttpMethod.POST){
+        if(path.startsWith("/hotel-service/hotel") && role.equals("ADMIN") && method == HttpMethod.POST){
         	return chain.filter(exchange);
         }
         //3.Delete hotel
-        if(path.matches("/HOTEL-SERVICE/hotel/[^/]+") && role.equals("ADMIN") && method == HttpMethod.DELETE){
+        if(path.matches("/hotel-service/hotel/[^/]+") && role.equals("ADMIN") && method == HttpMethod.DELETE){
         	return chain.filter(exchange);
         }
         //3.Update hotel (Manager/Admin)
-        if(path.matches("/HOTEL-SERVICE/hotel/[^/]+") && (role.equals("ADMIN") || role.equals("MANAGER")) && method == HttpMethod.PUT){
+        if(path.matches("/hotel-service/hotel/[^/]+") && (role.equals("ADMIN") || role.equals("MANAGER")) && method == HttpMethod.PUT){
         	if(role.equals("ADMIN")){
         		return chain.filter(exchange);
         	}
@@ -98,36 +98,58 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
         
         // Add Rooms (Manager)
-        if (path.matches("/HOTEL-SERVICE/[^/]+/room") && method == HttpMethod.POST && role.equals("MANAGER")) {
-            return chain.filter(exchange);
+        if (path.matches("/hotel-service/hotel/[^/]+/room") && method == HttpMethod.POST && role.equals("MANAGER")) {
+        	String[] parts = path.split("/");
+            String hotelIdFromPath = parts[3];
+
+            if (hotelIdFromPath.equals(hotelId)) {
+                return chain.filter(exchange);
+            }
+
+            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+            return exchange.getResponse().setComplete();
         }
         
         // Update Room (Manager)
-        if (path.matches("/HOTEL-SERVICE/hotel/[^/]+/room/[^/]+") && method == HttpMethod.PUT && role.equals("MANAGER")) {
-            return chain.filter(exchange);
+        if (path.matches("/hotel-service/hotel/[^/]+/room/[^/]+") && method == HttpMethod.PUT && role.equals("MANAGER")) {
+        	String[] parts = path.split("/");
+            String hotelIdFromPath = parts[3];
+
+            if (hotelIdFromPath.equals(hotelId)) {
+                return chain.filter(exchange);
+            }
+
+            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+            return exchange.getResponse().setComplete();
         }
         
         // booking
-        if (path.matches("/BOOKING-SERVICE/api/booking/[^/]+") && method == HttpMethod.POST && (role.equals("USER") || role.equals("RECEPTIONIST"))) {
+        if (path.matches("/booking-service/api/booking/[^/]+") && method == HttpMethod.POST && (role.equals("USER") || role.equals("RECEPTIONIST"))) {
             if(role.equals("USER")){
         		return chain.filter(exchange);
         	}
         	else {
         		String[] parts = path.split("/");
-        		String hotelIdFromPath = parts[4]; 
+                String hotelIdFromPath = parts[4];
 
-                if (hotelIdFromPath.equals(hotelId)) { 
+                if (hotelIdFromPath.equals(hotelId)) {
                     return chain.filter(exchange);
                 }
-                else {
-                    exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-                    return exchange.getResponse().setComplete();
-                }
+                exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                return exchange.getResponse().setComplete();
         	}
         }
         
         // Cancel Booking 
-        if (path.matches("/BOOKING-SERVICE/api/booking/[^/]+cancel") && method == HttpMethod.PUT && (role.equals("USER"))) {
+        if (path.matches("/booking-service/api/booking/[^/]+/cancel")	 && method == HttpMethod.PUT && (role.equals("USER"))) {
+            return chain.filter(exchange);
+        }
+        
+        //internal
+        if (path.startsWith("/booking-service/api/booking/booked-rooms")) {
+            return chain.filter(exchange);
+        }
+        if (path.matches("/hotel-service/hotel/[^/]+/room/[^/]+")) {
             return chain.filter(exchange);
         }
         
