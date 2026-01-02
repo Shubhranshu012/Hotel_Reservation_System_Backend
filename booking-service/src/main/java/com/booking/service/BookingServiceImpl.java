@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.time.temporal.ChronoUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.booking.dto.BookingRequest;
@@ -27,11 +28,15 @@ public class BookingServiceImpl implements BookingService {
 	public BookingResponse createBooking(BookingRequest request,String hotelId) {
 
 		RoomResponse room = hotelClient.getRoom(hotelId, request.getRoomId());
-
-		if (!"AVAILABLE".equals(room.getStatus())) {
-			throw new RuntimeException("Room not available");
+		List<Reservation> bookings=repository.findByHotelIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(hotelId,List.of(RSTATUS.BOOKED,RSTATUS.CONFIRMED,RSTATUS.CHECKED_IN),request.getCheckInDate(),request.getCheckOutDate());;
+		
+		for (int i = 0; i < bookings.size(); i++) {
+		    Reservation reservation = bookings.get(i);
+		    if (reservation.getRoomId().equals(request.getRoomId())) {
+		    	new RuntimeException("Room Already Booked");
+		    }
 		}
-
+		
 		Reservation reservation = new Reservation();
 		reservation.setHotelId(hotelId);
 		reservation.setRoomId(request.getRoomId());
@@ -39,8 +44,9 @@ public class BookingServiceImpl implements BookingService {
 		reservation.setGuestEmail(request.getGuestEmail());
 		reservation.setCheckInDate(request.getCheckInDate());
 		reservation.setCheckOutDate(request.getCheckOutDate());
+		long diffInDays = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
 		reservation.setStatus(RSTATUS.BOOKED);
-		reservation.setPrice(room.getPrice());
+		reservation.setPrice(room.getPrice()*diffInDays);
 
 		repository.save(reservation);
 

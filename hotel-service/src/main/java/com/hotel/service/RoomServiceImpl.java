@@ -1,9 +1,12 @@
 package com.hotel.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hotel.dto.CheckInRequest;
 import com.hotel.dto.RoomRequest;
 import com.hotel.dto.UpdateRoomRequest;
 import com.hotel.exception.BadRequestException;
@@ -82,5 +85,31 @@ public class RoomServiceImpl implements RoomService {
 	public Room getRoom(String hotelId, String roomId) {
 		return roomRepository.findByIdAndHotelId(roomId, hotelId)
 				.orElseThrow(() -> new NotFoundException());
+	}
+	@Override
+	public void CheckInCheckOut(String hotelId, String roomId,CheckInRequest request) {
+		validateActiveHotel(hotelId);
+		Optional<Room> room=roomRepository.findByIdAndHotelId(roomId, hotelId);
+		if(room.isEmpty()) {
+			throw new NotFoundException();
+		}
+		if(request.getCheckIn()==true) {
+			if(room.get().getStatus()==RSTATUS.OCCUPIED) {
+				throw new BadRequestException("Room Already Checked In");
+			}
+			else {
+				room.get().setStatus(RSTATUS.OCCUPIED);
+			}
+		}
+		else {
+			if(room.get().getStatus()==RSTATUS.AVAILABLE) {
+				throw new BadRequestException("Room Already Checked Out");
+			}
+			else {
+				room.get().setStatus(RSTATUS.AVAILABLE);
+			}
+		}
+		roomRepository.save(room.get());
+		return;
 	}
 }
