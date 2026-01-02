@@ -40,6 +40,7 @@ public class BookingServiceImpl implements BookingService {
 		reservation.setCheckInDate(request.getCheckInDate());
 		reservation.setCheckOutDate(request.getCheckOutDate());
 		reservation.setStatus(RSTATUS.BOOKED);
+		reservation.setPrice(room.getPrice());
 
 		repository.save(reservation);
 

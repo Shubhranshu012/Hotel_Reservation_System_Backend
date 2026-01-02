@@ -32,7 +32,7 @@ public class RoomServiceImpl implements RoomService {
 		}
 
 		Room room = Room.builder().hotelId(hotelId).roomNumber(request.getRoomNumber()).type(request.getType())
-				.status(RSTATUS.AVAILABLE).build();
+				.status(RSTATUS.AVAILABLE).price(request.getPrice()).build();
 		
 		hotel.setNumberOfRooms(hotel.getNumberOfRooms() + 1);
 	    hotelRepository.save(hotel);

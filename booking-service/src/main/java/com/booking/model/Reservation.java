@@ -22,6 +22,7 @@ public class Reservation {
 
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
+    private Double price;
 
     private RSTATUS status;
 }

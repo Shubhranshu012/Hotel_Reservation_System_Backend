@@ -108,6 +108,30 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         	}
         }
         
+        //get All Rooms (rooms/{hotelId})
+        if (path.matches("/hotel-service/rooms/[^/]+") && method == HttpMethod.GET && role.equals("MANAGER")) {
+        	String[] parts = path.split("/");
+            String hotelIdFromPath = parts[3];
+
+            if (hotelIdFromPath.equals(hotelId)) {
+                return chain.filter(exchange);
+            }
+
+            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+            return exchange.getResponse().setComplete();
+        }
+        //get All Bookings
+        if (path.matches("/booking-service/api/booking/booked-rooms/[^/]+") && method == HttpMethod.GET && ( role.equals("MANAGER") || role.equals("RECEPTIONIST") )) {
+        	String[] parts = path.split("/");
+            String hotelIdFromPath = parts[5];
+
+            if (hotelIdFromPath.equals(hotelId)) {
+                return chain.filter(exchange);
+            }
+            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+            return exchange.getResponse().setComplete();
+        }
+        
         // Add Rooms (Manager)
         if (path.matches("/hotel-service/hotel/[^/]+/room") && method == HttpMethod.POST && role.equals("MANAGER")) {
         	String[] parts = path.split("/");

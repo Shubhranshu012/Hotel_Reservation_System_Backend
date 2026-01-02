@@ -11,4 +11,5 @@ import com.booking.model.Reservation;
 public interface ReservationRepository extends MongoRepository<Reservation, String> {
 
   List<Reservation> findByHotelIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(String hotelId,List<RSTATUS> status,LocalDate checkIn,LocalDate checkOut);
+  List<Reservation> findByHotelId(String hotelId);
 }
