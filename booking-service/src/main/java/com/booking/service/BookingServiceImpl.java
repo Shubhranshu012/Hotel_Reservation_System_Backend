@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.booking.dto.BookingRequest;
 import com.booking.dto.BookingResponse;
 import com.booking.dto.RoomResponse;
+import com.booking.exception.BadRequestException;
+import com.booking.exception.NotFoundException;
 import com.booking.feign.HotelFeignClient;
 import com.booking.model.RSTATUS;
 import com.booking.model.Reservation;
@@ -33,7 +35,7 @@ public class BookingServiceImpl implements BookingService {
 		for (int i = 0; i < bookings.size(); i++) {
 		    Reservation reservation = bookings.get(i);
 		    if (reservation.getRoomId().equals(request.getRoomId())) {
-		    	new RuntimeException("Room Already Booked");
+		    	new BadRequestException("Room Already Booked");
 		    }
 		}
 		
@@ -44,6 +46,7 @@ public class BookingServiceImpl implements BookingService {
 		reservation.setGuestEmail(request.getGuestEmail());
 		reservation.setCheckInDate(request.getCheckInDate());
 		reservation.setCheckOutDate(request.getCheckOutDate());
+		
 		long diffInDays = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
 		reservation.setStatus(RSTATUS.BOOKED);
 		reservation.setPrice(room.getPrice()*diffInDays);
@@ -56,9 +59,12 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public void cancelBooking(String reservationId) {
 
-		Reservation reservation = repository.findById(reservationId)
-				.orElseThrow(() -> new RuntimeException("Reservation not found"));
+		Reservation reservation = repository.findById(reservationId).orElseThrow(() -> new NotFoundException());
+		LocalDate tomorrow = LocalDate.now().plusDays(1);
 
+	    if (!reservation.getCheckInDate().isAfter(tomorrow)) {
+	        throw new BadRequestException("Cant cancel Booking within 24Hrs");
+	    }
 		reservation.setStatus(RSTATUS.CANCELLED);
 		repository.save(reservation);
 	}

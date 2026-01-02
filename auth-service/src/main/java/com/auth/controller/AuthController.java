@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.auth.dto.ChangeRequest;
 import com.auth.dto.LoginRequest;
+import com.auth.exception.BadRequestException;
+import com.auth.exception.NotFoundException;
 import com.auth.model.User;
 import com.auth.repository.UserRepository;
 import com.auth.security.JwtService;
@@ -32,7 +34,7 @@ public class AuthController {
 	public ResponseEntity<Void> register(@RequestBody User user) {
 		Optional<User> users=userRepository.findByEmail(user.getEmail());
 		if(!users.isEmpty()) {
-			throw new RuntimeException("Email Already Exists");
+			throw new BadRequestException("Email Already Exists");
 		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 	    userRepository.save(user);
@@ -43,10 +45,10 @@ public class AuthController {
 	public ResponseEntity<Map<String,String>> login(@RequestBody LoginRequest request){
 		Optional<User> users=userRepository.findByEmail(request.getEmail());
 		if(users.isEmpty()) {
-			throw new RuntimeException("Email not Found");
+			throw new NotFoundException();
 		}
 		if (!passwordEncoder.matches(request.getPassword(), users.get().getPassword())) {
-            throw new RuntimeException("Invalid Credentials");
+            throw new BadRequestException("Invalid Credentials");
         }
 		Map<String,String> responce=new HashMap<>();
 		responce.put("Token",jwtService.generateToken(request.getEmail(),users.get().getRole(),users.get().getHotelId()));
@@ -59,10 +61,10 @@ public class AuthController {
 	public ResponseEntity<Map<String,String>> chnagePassword(@RequestBody ChangeRequest request){
 		Optional<User> users=userRepository.findByEmail(request.getEmail());
 		if(users.isEmpty()) {
-			throw new RuntimeException("Email not Found");
+			throw new NotFoundException();
 		}
 		if (!passwordEncoder.matches(request.getOldPassword(), users.get().getPassword())) {
-            throw new RuntimeException("Invalid Old PassWord");
+            throw new BadRequestException("Invalid Old PassWord");
         }
 		users.get().setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(users.get());

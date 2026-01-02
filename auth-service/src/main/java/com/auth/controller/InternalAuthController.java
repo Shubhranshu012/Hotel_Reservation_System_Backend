@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auth.exception.BadRequestException;
 import com.auth.model.ROLE;
 import com.auth.model.User;
 import com.auth.repository.UserRepository;
@@ -30,7 +31,7 @@ public class InternalAuthController {
 	public ResponseEntity<Void> registerManager(@RequestBody User user ,@PathVariable String hotelId) {
 		Optional<User> users=userRepository.findByEmail(user.getEmail());
 		if(!users.isEmpty()) {
-			throw new RuntimeException("Email Already Exists");
+			throw new BadRequestException("Email Already Exists");
 		}
 		user.setHotelId(hotelId);
 		user.setRole(ROLE.MANAGER);
@@ -42,7 +43,7 @@ public class InternalAuthController {
 	public ResponseEntity<Void> registerReceptionist(@RequestBody User user,@PathVariable String hotelId) {
 		Optional<User> users=userRepository.findByEmail(user.getEmail());
 		if(!users.isEmpty()) {
-			throw new RuntimeException("Email Already Exists");
+			throw new BadRequestException("Email Already Exists");
 		}
 		user.setHotelId(hotelId);
 		user.setRole(ROLE.RECEPTIONIST);

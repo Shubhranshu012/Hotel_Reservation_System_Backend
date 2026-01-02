@@ -18,7 +18,7 @@ import com.booking.service.BookingService;
 @RequestMapping("/api/booking")
 public class BookingController {
 	@Autowired
-    private BookingService bookingService;
+    BookingService bookingService;
     
 	@Autowired
 	ReservationRepository reservationRepository;
