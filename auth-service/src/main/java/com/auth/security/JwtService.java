@@ -17,8 +17,8 @@ public class JwtService {
 	@Value("${jwt.secret}")
     private String SECRET;
 
-	public String generateToken(String username, ROLE role,String hotelId) {
-        return Jwts.builder().setSubject(username)
+	public String generateToken(String email, ROLE role,String hotelId) {
+        return Jwts.builder().setSubject(email)
         		.claim("role", role.name())
         		.claim("hotelId", hotelId)
                 .setIssuedAt(new Date())

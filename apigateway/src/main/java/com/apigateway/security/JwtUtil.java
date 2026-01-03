@@ -29,4 +29,7 @@ public class JwtUtil {
     public String extractHotelId(String token) {
     	return extractClaims(token).get("hotelId", String.class);
     }
+    public String extractEmail(String token) {
+        return extractClaims(token).getSubject();
+    }
 }

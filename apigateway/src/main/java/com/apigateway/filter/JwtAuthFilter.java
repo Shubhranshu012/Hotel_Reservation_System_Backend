@@ -43,10 +43,12 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         String token = authHeader.substring(7);
         String role;
         String hotelId;
+        String Email;
 
         try {
             role = jwtUtil.extractRole(token);
             hotelId = jwtUtil.extractHotelId(token);
+            Email=jwtUtil.extractEmail(token);
             System.out.println("Role: " + role + ", HotelId: " + hotelId);
         } catch (Exception e) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -125,11 +127,41 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         // Cancel booking (GUEST)
-        if (path.matches("/booking-service/api/booking/[^/]+/cancel") && method == HttpMethod.PUT &&
+        if (path.matches("/booking-service/api/booking/[^/]+/[^/]+/cancel") && method == HttpMethod.DELETE &&
             role.equals("GUEST")) {
-            return chain.filter(exchange);
-        }
+        	String[] parts = path.split("/");
 
+        	String email = parts[4]; 
+        	if(email.equals(Email)) {
+        		return chain.filter(exchange);        		
+        	}else {
+        		exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                return exchange.getResponse().setComplete();
+        	}
+        }
+        if(path.matches("/booking-service/api/booking/[^/]+/all") && method == HttpMethod.GET && role.equals("GUEST")) {
+        	String[] parts = path.split("/");
+
+        	String email = parts[4]; 
+        	if(email.equals(Email)) {
+        		return chain.filter(exchange);        		
+        	}else {
+        		exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                return exchange.getResponse().setComplete();
+        	}
+        }
+        if (path.matches("/booking-service/api/booking/[^/]+/[^/]+/update") && method == HttpMethod.PUT &&
+                role.equals("GUEST")) {
+            	String[] parts = path.split("/");
+
+            	String email = parts[4]; 
+            	if(email.equals(Email)) {
+            		return chain.filter(exchange);        		
+            	}else {
+            		exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                    return exchange.getResponse().setComplete();
+            	}
+            }
         // Internal 
         if (path.startsWith("/booking-service/api/booking/booked-rooms") ||
             path.matches("/hotel-service/hotel/[^/]+/room/[^/]+")) {

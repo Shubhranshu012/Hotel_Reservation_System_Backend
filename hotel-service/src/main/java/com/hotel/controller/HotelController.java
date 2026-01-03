@@ -34,7 +34,7 @@ public class HotelController {
 
 	//Admin (Added)
 	@PostMapping("/hotel")
-	private ResponseEntity<Void> addHotel(@RequestBody @Valid InventoryRequest request) {
+	public ResponseEntity<Void> addHotel(@RequestBody @Valid InventoryRequest request) {
 		hotelService.createHotel(request);
 		return ResponseEntity.status(201).build();
 	}
@@ -54,14 +54,14 @@ public class HotelController {
 	
 	//Admin (Added)
 	@GetMapping("/hotel/all")
-	private ResponseEntity<List<Hotels>> getAllHotels() {
+	public ResponseEntity<List<Hotels>> getAllHotels() {
 		List<Hotels> hotels=hotelService.getAll();
 		return ResponseEntity.status(200).body(hotels);
 	}
 	
 	//Manager (Added)
 	@PostMapping("/hotel/{hotelId}/room")
-	private ResponseEntity<Void> addRooms(@RequestBody @Valid List<RoomRequest> request, @PathVariable String hotelId) {
+	public ResponseEntity<Void> addRooms(@RequestBody @Valid List<RoomRequest> request, @PathVariable String hotelId) {
 		for (Integer x = 0; x < request.size(); x++) {
 			roomService.createRoom(hotelId, request.get(x));
 		}
@@ -70,14 +70,14 @@ public class HotelController {
 	
 	//Maneger (Added)
 	@PutMapping("/hotel/{hotelId}/room/{roomId}")
-	private ResponseEntity<Void> updateRooms(@RequestBody @Valid UpdateRoomRequest request, @PathVariable String hotelId, @PathVariable String roomId) {
+	public ResponseEntity<Void> updateRooms(@RequestBody @Valid UpdateRoomRequest request, @PathVariable String hotelId, @PathVariable String roomId) {
 		roomService.updateRoom(hotelId, roomId, request);
 		return ResponseEntity.status(200).build();
 	}
 	
 	//internal
 	@GetMapping("/hotel/{hotelId}/room/{roomId}")
-	private ResponseEntity<Room> getRoom(@PathVariable String hotelId, @PathVariable String roomId) {
+	public ResponseEntity<Room> getRoom(@PathVariable String hotelId, @PathVariable String roomId) {
 		Room room = roomService.getRoom(hotelId, roomId);
 		return ResponseEntity.status(200).body(room);
 	}
@@ -85,7 +85,7 @@ public class HotelController {
 	
 	//Public (Added)
 	@PostMapping("/search")
-	private ResponseEntity<List<Hotels>> searchHotels(@RequestBody @Valid HotelSearchRequest request) {
+	public ResponseEntity<List<Hotels>> searchHotels(@RequestBody @Valid HotelSearchRequest request) {
 		List<Hotels> hotels=hotelService.searchHotels(request);
 		return ResponseEntity.status(200).body(hotels);
 	}

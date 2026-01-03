@@ -12,4 +12,5 @@ public interface ReservationRepository extends MongoRepository<Reservation, Stri
 
   List<Reservation> findByHotelIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(String hotelId,List<RSTATUS> status,LocalDate checkIn,LocalDate checkOut);
   List<Reservation> findByHotelId(String hotelId);
+  List<Reservation> findByGuestEmail(String guestEmail);
 }
