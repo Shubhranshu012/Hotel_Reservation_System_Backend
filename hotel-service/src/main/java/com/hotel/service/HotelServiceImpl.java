@@ -45,22 +45,12 @@ public class HotelServiceImpl implements HotelService {
 	@Override
 	public void updateHotel(String hotelId, UpdateHotelRequest request) {
 
-	    Hotels hotel = hotelRepository
-	            .findByIdAndStatus(hotelId, HSTATUS.ACTIVE)
-	            .orElseThrow(NotFoundException::new);
+	    Hotels hotel = hotelRepository.findByIdAndStatus(hotelId, HSTATUS.ACTIVE).orElseThrow(NotFoundException::new);
 
-	    if (request.getHotelName() != null) {
-	        hotel.setHotelName(request.getHotelName());
-	    }
-	    if (request.getCity() != null) {
-	        hotel.setCity(request.getCity());
-	    }
-	    if (request.getAddress() != null) {
-	        hotel.setAddress(request.getAddress());
-	    }
-	    if (request.getNumberOfRooms() != null) {
-	        hotel.setNumberOfRooms(request.getNumberOfRooms());
-	    }
+	    hotel.setHotelName(request.getHotelName());
+	    hotel.setCity(request.getCity());
+	    hotel.setAddress(request.getAddress());
+	    hotel.setNumberOfRooms(request.getNumberOfRooms());	  
 
 	    hotelRepository.save(hotel);
 	}
