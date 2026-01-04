@@ -6,6 +6,7 @@ import java.util.List;
 import com.booking.dto.BookingRequest;
 import com.booking.dto.BookingResponse;
 import com.booking.dto.ChangeRequest;
+import com.booking.dto.CheckInRequest;
 import com.booking.model.Reservation;
 
 public interface BookingService {
@@ -14,4 +15,5 @@ public interface BookingService {
     public List<String> getBookedRoomIds(String hotelId,LocalDate checkIn,LocalDate checkOut);
     public List<Reservation> getAllBooking(String email);
     public void updateBooking(String reservationId, String email, ChangeRequest request);
+    public void checkInCheckOut(String reservationId,CheckInRequest checkInRequest);
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.booking.dto.BookingRequest;
 import com.booking.dto.BookingResponse;
 import com.booking.dto.ChangeRequest;
+import com.booking.dto.CheckInRequest;
 import com.booking.model.Reservation;
 import com.booking.repository.ReservationRepository;
 import com.booking.service.BookingService;
@@ -48,14 +49,10 @@ public class BookingController {
         return ResponseEntity.ok().body(responce);
     }
     
-    //internal
-    @GetMapping("/booked-rooms")
-    public List<String> getBookedRooms(@RequestParam String hotelId,@RequestParam @DateTimeFormat(pattern = "M/d/yy") LocalDate checkIn,@RequestParam @DateTimeFormat(pattern = "M/d/yy") LocalDate checkOut) {
-        return bookingService.getBookedRoomIds(hotelId, checkIn, checkOut);
-    }
     
-    //
-    @GetMapping("/booked-rooms/{hotelId}")
+    
+    //get all Booking for A hotel
+    @GetMapping("/booking/{hotelId}")
     public ResponseEntity<List<Reservation>> getBookings(@PathVariable String hotelId) {
     	List<Reservation> responce=reservationRepository.findByHotelId(hotelId);
         return ResponseEntity.status(200).body(responce);
@@ -66,6 +63,19 @@ public class BookingController {
 
     	bookingService.updateBooking(reservationId,email,request);
         return ResponseEntity.ok().build();
+    }
+    
+    
+    //internal
+    @GetMapping("/booked-rooms")
+    public List<String> getBookedRooms(@RequestParam String hotelId,@RequestParam @DateTimeFormat(pattern = "M/d/yy") LocalDate checkIn,@RequestParam @DateTimeFormat(pattern = "M/d/yy") LocalDate checkOut) {
+        return bookingService.getBookedRoomIds(hotelId, checkIn, checkOut);
+    }
+    
+    @PutMapping("/checkin/{bookingId}")
+    public ResponseEntity<Void> checkInCheckOut(@PathVariable String bookingId,@RequestBody CheckInRequest request){
+    	bookingService.checkInCheckOut(bookingId,request);
+    	return ResponseEntity.status(200).build();
     }
     
 }

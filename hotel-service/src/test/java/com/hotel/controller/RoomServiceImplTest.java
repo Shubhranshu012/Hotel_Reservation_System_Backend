@@ -19,6 +19,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -42,7 +44,8 @@ class RoomControllerTest {
 
 	@MockBean
 	private BookingFeignClient bookingFeignClient;
-
+	
+	
 	@Autowired
 	private ObjectMapper objectMapper;
 
@@ -74,16 +77,36 @@ class RoomControllerTest {
 	    mockMvc.perform(get("/rooms/emptyHotel"))
 	            .andExpect(status().isOk());
 	}
+	@Test
+	void testGetRoomsByHotel_Success() throws Exception {
+	    mockMvc.perform(get("/rooms/hotel1"))
+	            .andExpect(status().isOk());
+	}
+	@Test
+	void testDeleteRoom_Success() throws Exception {
+	    Mockito.doNothing().when(roomRepository).delete(any(Room.class));
+
+	    mockMvc.perform(MockMvcRequestBuilders.delete("/hotel/hotel1/room/room1"))
+	    		.andExpect(status().isOk());
+	}
+	@Test
+	void testDeleteRoom_Occupied_ShouldFail() throws Exception {
+	    Mockito.when(roomRepository.findByIdAndHotelId("roomOccupied", "hotel1"))
+	            .thenReturn(java.util.Optional.of(occupiedRoom));
+
+	    mockMvc.perform(MockMvcRequestBuilders.delete("/hotel/hotel1/room/roomOccupied"))
+	    		.andExpect(status().isBadRequest());
+	}
 
 	@Test
 	void testCheckInRoom_Success() throws Exception {
 	    CheckInRequest request = new CheckInRequest();
 	    request.setCheckIn(true);
 
-	    mockMvc.perform(put("/hotel1/rooms/room1")
-	                    .contentType(MediaType.APPLICATION_JSON)
-	                    .content(objectMapper.writeValueAsString(request)))
-	            		.andExpect(status().isOk());
+	    mockMvc.perform(put("/hotel1/rooms/room1/booking1")
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .content(objectMapper.writeValueAsString(request)))
+	            .andExpect(status().isOk());
 	}
 
 	@Test
@@ -94,10 +117,10 @@ class RoomControllerTest {
 	    Room occupiedRoom = Room.builder().id("room1").hotelId("hotel1").roomNumber("101").type(RTYPE.DELUXE).status(RSTATUS.OCCUPIED).price(100.0).build();
 	    Mockito.when(roomRepository.findByIdAndHotelId("room1", "hotel1")).thenReturn(java.util.Optional.of(occupiedRoom));
 
-	    mockMvc.perform(put("/hotel1/rooms/room1")
-	                    .contentType(MediaType.APPLICATION_JSON)
-	                    .content(objectMapper.writeValueAsString(request)))
-	            		.andExpect(status().isOk());
+	    mockMvc.perform(put("/hotel1/rooms/room1/booking1")
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .content(objectMapper.writeValueAsString(request)))
+	            .andExpect(status().isOk());
 	}
 
 	@Test
@@ -105,10 +128,10 @@ class RoomControllerTest {
 	    CheckInRequest request = new CheckInRequest();
 	    request.setCheckIn(true);
 
-	    mockMvc.perform(put("/hotel1/rooms/roomOccupied")
-	                    .contentType(MediaType.APPLICATION_JSON)
-	                    .content(objectMapper.writeValueAsString(request)))
-	            		.andExpect(status().isBadRequest());
+	    mockMvc.perform(put("/hotel1/rooms/roomOccupied/booking1")
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .content(objectMapper.writeValueAsString(request)))
+	            .andExpect(status().isBadRequest());
 	}
 
 }

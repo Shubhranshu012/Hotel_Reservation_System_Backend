@@ -121,7 +121,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         // CheckIn / CheckOut (RECEPTIONIST)
-        if (path.matches("/hotel-service/[^/]+/rooms/[^/]+") && method == HttpMethod.PUT &&
+        if (path.matches("/hotel-service/[^/]+/rooms/[^/]+/[^/]+") && method == HttpMethod.PUT &&
             role.equals("RECEPTIONIST")) {
             return chain.filter(exchange);
         }
@@ -163,11 +163,10 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             	}
             }
         // Internal 
-        if (path.startsWith("/booking-service/api/booking/booked-rooms") ||
-            path.matches("/hotel-service/hotel/[^/]+/room/[^/]+")) {
+        if (path.startsWith("/booking-service/api/booking/booked-rooms") || path.matches("/hotel-service/hotel/[^/]+/room/[^/]+") || path.matches("/booking-service/api/booking/checkin/[^/]+")) {
             return chain.filter(exchange);
         }
-
+        
         exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
         return exchange.getResponse().setComplete();
     }

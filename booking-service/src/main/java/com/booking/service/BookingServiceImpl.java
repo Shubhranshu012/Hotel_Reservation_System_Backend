@@ -10,13 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.booking.dto.BookingEvent;
 import com.booking.dto.BookingRequest;
 import com.booking.dto.BookingResponse;
 import com.booking.dto.ChangeRequest;
+import com.booking.dto.CheckInRequest;
 import com.booking.dto.RoomResponse;
 import com.booking.exception.BadRequestException;
 import com.booking.exception.NotFoundException;
 import com.booking.feign.HotelFeignClient;
+import com.booking.kafka.BookingEventProducer;
 import com.booking.model.RSTATUS;
 import com.booking.model.Reservation;
 import com.booking.repository.ReservationRepository;
@@ -29,6 +32,9 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private HotelFeignClient hotelClient;
+	
+	@Autowired
+	private BookingEventProducer bookingEventProducer;
 
 	@Override
 	public BookingResponse createBooking(BookingRequest request,String hotelId) {
@@ -56,7 +62,16 @@ public class BookingServiceImpl implements BookingService {
 		reservation.setPrice(room.getPrice()*diffInDays);
 
 		repository.save(reservation);
+		BookingEvent event = new BookingEvent();
+		event.setEventType("BOOKING_CONFIRMED");
+		event.setReservationId(reservation.getId());
+		event.setHotelId(reservation.getHotelId());
+		event.setRoomId(reservation.getRoomId());
+		event.setGuestEmail(reservation.getGuestEmail());
+		event.setCheckIn(reservation.getCheckInDate().toString());
+		event.setCheckOut(reservation.getCheckOutDate().toString());
 
+		bookingEventProducer.sendEvent(event);
 		return new BookingResponse(reservation.getId(), "BOOKED");
 	}
 
@@ -94,8 +109,7 @@ public class BookingServiceImpl implements BookingService {
 
         List<Reservation> bookings =repository.findByHotelIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(existingReservation.getHotelId(),List.of(RSTATUS.BOOKED, RSTATUS.CONFIRMED, RSTATUS.CHECKED_IN),request.getCheckInDate(),request.getCheckOutDate());
         for (Reservation booking : bookings) {
-            if (!booking.getId().equals(reservationId)
-                    && booking.getRoomId().equals(existingReservation.getRoomId())) {
+            if (!booking.getId().equals(reservationId) && booking.getRoomId().equals(existingReservation.getRoomId())) {
                 throw new BadRequestException("Room Already Booked");
             }
         }
@@ -104,6 +118,31 @@ public class BookingServiceImpl implements BookingService {
         existingReservation.setCheckOutDate(request.getCheckOutDate());
 
         repository.save(existingReservation);
+    }
+    @Override
+    public void checkInCheckOut(String reservationId,CheckInRequest checkInRequest) {
+    	Reservation existingReservation = repository.findById(reservationId).orElseThrow(NotFoundException::new);
+    	if(existingReservation.getStatus() == RSTATUS.BOOKED) {
+    		if(checkInRequest.getCheckIn()) {
+    			existingReservation.setStatus(RSTATUS.CHECKED_IN);
+    			repository.save(existingReservation);
+    		}
+    		else {
+    			throw new BadRequestException("Status is Not CheckIn");
+    		}
+    	}
+    	else if(existingReservation.getStatus() == RSTATUS.CHECKED_IN){
+    		if(checkInRequest.getCheckIn()) {
+    			throw new BadRequestException("Booking is Already CheckIn");
+    		}
+    		else {
+    			existingReservation.setStatus(RSTATUS.CHECKED_OUT);
+    			repository.save(existingReservation);
+    		}
+    	}
+    	else {
+    		throw new BadRequestException("Booking Status Is not Booked OR CheckedIn");
+    	}
     }
 
 }

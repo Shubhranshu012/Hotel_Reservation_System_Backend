@@ -18,5 +18,5 @@ public interface RoomService  {
 
     void deleteRoom(String hotelId, String roomId);
     
-    void CheckInCheckOut(String hotelId, String roomId,CheckInRequest request);
+    void CheckInCheckOut(String hotelId, String roomId,CheckInRequest request,String bookingId);
 }

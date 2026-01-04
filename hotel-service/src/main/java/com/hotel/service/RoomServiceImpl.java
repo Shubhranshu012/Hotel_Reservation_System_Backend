@@ -11,6 +11,7 @@ import com.hotel.dto.RoomRequest;
 import com.hotel.dto.UpdateRoomRequest;
 import com.hotel.exception.BadRequestException;
 import com.hotel.exception.NotFoundException;
+import com.hotel.feign.BookingFeignClient;
 import com.hotel.model.HSTATUS;
 import com.hotel.model.Hotels;
 import com.hotel.model.RSTATUS;
@@ -25,6 +26,9 @@ public class RoomServiceImpl implements RoomService {
 	@Autowired
 	HotelRepository hotelRepository;
 
+	@Autowired
+	BookingFeignClient feignClient;
+	
 	@Override
 	public Room createRoom(String hotelId, RoomRequest request) {
 
@@ -87,7 +91,7 @@ public class RoomServiceImpl implements RoomService {
 				.orElseThrow(() -> new NotFoundException());
 	}
 	@Override
-	public void CheckInCheckOut(String hotelId, String roomId,CheckInRequest request) {
+	public void CheckInCheckOut(String hotelId, String roomId,CheckInRequest request,String bookingId) {
 		validateActiveHotel(hotelId);
 		Optional<Room> room=roomRepository.findByIdAndHotelId(roomId, hotelId);
 		if(room.isEmpty()) {
@@ -98,6 +102,7 @@ public class RoomServiceImpl implements RoomService {
 				throw new BadRequestException("Room Already Checked In");
 			}
 			else {
+				feignClient.checkIn(roomId, request);
 				room.get().setStatus(RSTATUS.OCCUPIED);
 			}
 		}
@@ -106,6 +111,7 @@ public class RoomServiceImpl implements RoomService {
 				throw new BadRequestException("Room Already Checked Out");
 			}
 			else {
+				feignClient.checkIn(bookingId, request);
 				room.get().setStatus(RSTATUS.AVAILABLE);
 			}
 		}
