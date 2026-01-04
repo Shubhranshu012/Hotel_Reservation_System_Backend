@@ -97,8 +97,19 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                 return exchange.getResponse().setComplete();
             }
         }
-
         
+        //Delete Room (Manager)
+        if(path.matches("/hotel-service/hotel/[^/]+/room/[^/]+") && role.equals("MANAGER") && method == HttpMethod.DELETE) {
+        	String[] parts = path.split("/");
+        	String hotelIdFromPath = parts[3];
+        	if(hotelId.equals(hotelIdFromPath)) {
+        		return chain.filter(exchange);
+        	}
+        	else {
+        		 exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                 return exchange.getResponse().setComplete();
+        	}
+        }
         //Booking (any authenticated user)
         if (path.matches("/booking-service/api/booking/[^/]+") && method == HttpMethod.POST &&
                 (role.equals("GUEST") || role.equals("RECEPTIONIST"))) {

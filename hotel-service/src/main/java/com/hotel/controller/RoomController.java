@@ -31,7 +31,7 @@ public class RoomController {
 	}
 	
 	@PutMapping("{hotelId}/rooms/{roomId}/{bookingId}")
-	public ResponseEntity<Void> checkIncheckOut(@PathVariable String hotelId,@PathVariable String roomId,@RequestBody CheckInRequest checkInRequest,@PathVariable String bookingId){
+	public ResponseEntity<Void> checkIncheckOut(@PathVariable String hotelId,@PathVariable String roomId,@PathVariable String bookingId,@RequestBody CheckInRequest checkInRequest){
 		roomService.CheckInCheckOut(hotelId, roomId, checkInRequest,bookingId);
 		return ResponseEntity.status(200).build();
 	}

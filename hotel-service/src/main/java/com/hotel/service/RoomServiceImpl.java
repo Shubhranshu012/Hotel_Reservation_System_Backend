@@ -102,7 +102,11 @@ public class RoomServiceImpl implements RoomService {
 				throw new BadRequestException("Room Already Checked In");
 			}
 			else {
-				feignClient.checkIn(roomId, request);
+				try {
+				    feignClient.checkIn(bookingId, request);
+				} catch (Exception ex) {
+				    throw new BadRequestException("Booking check-in failed");
+				}
 				room.get().setStatus(RSTATUS.OCCUPIED);
 			}
 		}
@@ -111,11 +115,14 @@ public class RoomServiceImpl implements RoomService {
 				throw new BadRequestException("Room Already Checked Out");
 			}
 			else {
-				feignClient.checkIn(bookingId, request);
+				try {
+				    feignClient.checkIn(bookingId, request);
+				} catch (Exception ex) {
+				    throw new BadRequestException("Booking check-in failed");
+				}
 				room.get().setStatus(RSTATUS.AVAILABLE);
 			}
 		}
 		roomRepository.save(room.get());
-		return;
 	}
 }
