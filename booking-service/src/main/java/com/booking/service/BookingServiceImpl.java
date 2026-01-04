@@ -7,31 +7,6 @@ import java.util.stream.Collectors;
 import java.time.temporal.ChronoUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import com.booking.dto.BookingEvent;
 import com.booking.dto.BookingRequest;
 import com.booking.dto.BookingResponse;
@@ -60,9 +35,12 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public BookingResponse createBooking(BookingRequest request,String hotelId) {
+		if(request.getCheckInDate().isAfter(request.getCheckOutDate())) {
+			throw new BadRequestException("CheckOut Shouild be After CheckIn");
+		}
 
 		RoomResponse room = hotelClient.getRoom(hotelId, request.getRoomId());
-		List<Reservation> bookings=repository.findByHotelIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(hotelId,List.of(RSTATUS.BOOKED,RSTATUS.CONFIRMED,RSTATUS.CHECKED_IN),request.getCheckInDate(),request.getCheckOutDate());;
+		List<Reservation> bookings=repository.findByHotelIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(hotelId,List.of(RSTATUS.BOOKED,RSTATUS.CONFIRMED,RSTATUS.CHECKED_IN),request.getCheckInDate(),request.getCheckOutDate());
 		
 		for (int i = 0; i < bookings.size(); i++) {
 		    Reservation reservation = bookings.get(i);
@@ -96,7 +74,10 @@ public class BookingServiceImpl implements BookingService {
 		bookingEventProducer.sendEvent(event);
 		return new BookingResponse(reservation.getId(), "BOOKED");
 	}
-
+	@Override 
+	public List<Reservation> getAllBookingManager(String hotelId){
+		return repository.findByHotelId(hotelId);
+	}
 	@Override
 	public void cancelBooking(String reservationId,String email) {
 

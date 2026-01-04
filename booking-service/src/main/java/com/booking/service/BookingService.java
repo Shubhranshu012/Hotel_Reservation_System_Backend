@@ -16,4 +16,5 @@ public interface BookingService {
     public List<Reservation> getAllBooking(String email);
     public void updateBooking(String reservationId, String email, ChangeRequest request);
     public void checkInCheckOut(String reservationId,CheckInRequest checkInRequest);
+    public List<Reservation> getAllBookingManager(String hotelId);
 }

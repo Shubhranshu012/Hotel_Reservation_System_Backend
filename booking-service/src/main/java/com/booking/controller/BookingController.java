@@ -7,13 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.booking.dto.BookingRequest;
 import com.booking.dto.BookingResponse;
 import com.booking.dto.ChangeRequest;
 import com.booking.dto.CheckInRequest;
 import com.booking.model.Reservation;
-import com.booking.repository.ReservationRepository;
 import com.booking.service.BookingService;
 
 import jakarta.validation.Valid;
@@ -23,13 +21,10 @@ import jakarta.validation.Valid;
 public class BookingController {
 	@Autowired
     BookingService bookingService;
-    
-	@Autowired
-	ReservationRepository reservationRepository;
 	
 	//User/RECEPTIONIST (Added)
     @PostMapping("/{hotelId}")
-    public ResponseEntity<BookingResponse> bookRoom( @RequestBody BookingRequest request,@PathVariable String hotelId) {
+    public ResponseEntity<BookingResponse> bookRoom( @RequestBody @Valid BookingRequest request,@PathVariable String hotelId) {
         BookingResponse response = bookingService.createBooking(request,hotelId);
         return ResponseEntity.status(201).body(response);
     }
@@ -54,7 +49,7 @@ public class BookingController {
     //get all Booking for A hotel
     @GetMapping("/booking/{hotelId}")
     public ResponseEntity<List<Reservation>> getBookings(@PathVariable String hotelId) {
-    	List<Reservation> responce=reservationRepository.findByHotelId(hotelId);
+    	List<Reservation> responce=bookingService.getAllBookingManager(hotelId);
         return ResponseEntity.status(200).body(responce);
     }
     //User (Added)
