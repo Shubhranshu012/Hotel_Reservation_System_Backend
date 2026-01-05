@@ -10,5 +10,7 @@ public class RegisterRequest {
 	private String email;
 	@NotBlank(message = "PassWord Is Required")
     private String password;
+	@NotBlank(message = "Confirm PassWord Is Required")
+    private String confirmPassword;
     private ROLE role;
 }

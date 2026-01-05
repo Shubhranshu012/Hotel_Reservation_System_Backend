@@ -73,24 +73,40 @@ public class HotelServiceImpl implements HotelService {
 	}
 	
 	@Override
-	public List<Hotels> searchHotels(HotelSearchRequest request){
+	public List<Hotels> searchHotels(HotelSearchRequest request) {
 
-        List<Hotels> hotels = hotelRepository.findByCityAndStatus(request.getCity(),HSTATUS.ACTIVE);
+	    List<Hotels> hotels = hotelRepository.findByCityAndStatus(request.getCity(), HSTATUS.ACTIVE);
 
-        return hotels.stream()
-                .filter(hotel -> {
-                    List<Room> rooms = roomRepository.findByHotelId(hotel.getId());
-                    List<String> bookedRoomIds =bookingClient.getBookedRooms(hotel.getId(),request.getCheckIn(),request.getCheckOut());
-                    long availableRooms =rooms.stream().filter(room -> !bookedRoomIds.contains(room.getId())).count();
-                    return availableRooms >= request.getRoomCount();
-                })
-                .collect(Collectors.toList());
-    }
+	    return hotels.stream()
+	            .filter(hotel -> {
+	                List<Room> rooms = roomRepository.findByHotelId(hotel.getId());
+	                List<String> bookedRoomIds;
+
+	                try {
+	                    bookedRoomIds = bookingClient.getBookedRooms(hotel.getId(), request.getCheckIn(), request.getCheckOut());
+	                } catch (Exception e) {
+	                    throw new NotFoundException();
+	                }
+
+	                long availableRooms = rooms.stream()
+	                        .filter(room -> !bookedRoomIds.contains(room.getId()))
+	                        .count();
+
+	                return availableRooms >= request.getRoomCount();
+	            })
+	            .collect(Collectors.toList());
+	}
 	@Override
     public List<Room> getAvailableRooms(String hotelId,LocalDate checkIn,LocalDate checkOut) {
 
         List<Room> rooms = roomRepository.findByHotelId(hotelId);
-        List<String> bookedRoomIds =bookingClient.getBookedRooms(hotelId, checkIn, checkOut);
+        List<String> bookedRoomIds;
+
+        try {
+            bookedRoomIds = bookingClient.getBookedRooms(hotelId, checkIn, checkOut);
+        } catch (Exception e) { 
+        	throw new NotFoundException();
+        }
 
         return rooms.stream()
                 .filter(room -> !bookedRoomIds.contains(room.getId()))

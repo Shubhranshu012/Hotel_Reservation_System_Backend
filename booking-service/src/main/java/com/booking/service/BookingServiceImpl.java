@@ -38,8 +38,12 @@ public class BookingServiceImpl implements BookingService {
 		if(request.getCheckInDate().isAfter(request.getCheckOutDate())) {
 			throw new BadRequestException("CheckOut Shouild be After CheckIn");
 		}
-
-		RoomResponse room = hotelClient.getRoom(hotelId, request.getRoomId());
+		RoomResponse room;
+		try {
+		    room = hotelClient.getRoom(hotelId, request.getRoomId());
+		} catch (Exception e) { 
+			throw new NotFoundException();
+		}
 		List<Reservation> bookings=repository.findByHotelIdAndStatusInAndCheckOutDateAfterAndCheckInDateBefore(hotelId,List.of(RSTATUS.BOOKED,RSTATUS.CONFIRMED,RSTATUS.CHECKED_IN),request.getCheckInDate(),request.getCheckOutDate());
 		
 		for (int i = 0; i < bookings.size(); i++) {
@@ -92,6 +96,16 @@ public class BookingServiceImpl implements BookingService {
 	    }
 		reservation.setStatus(RSTATUS.CANCELLED);
 		repository.save(reservation);
+		BookingEvent event = new BookingEvent();
+		event.setEventType("BOOKING_CANCELLED");
+		event.setReservationId(reservation.getId());
+		event.setHotelId(reservation.getHotelId());
+		event.setRoomId(reservation.getRoomId());
+		event.setGuestEmail(reservation.getGuestEmail());
+		event.setCheckIn(reservation.getCheckInDate().toString());
+		event.setCheckOut(reservation.getCheckOutDate().toString());
+
+		bookingEventProducer.sendEvent(event);
 	}
 
     @Override

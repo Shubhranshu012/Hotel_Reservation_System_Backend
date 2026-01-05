@@ -1,75 +1,42 @@
 package com.auth.controller;
 
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.auth.dto.ChangeRequest;
 import com.auth.dto.LoginRequest;
-import com.auth.exception.BadRequestException;
-import com.auth.exception.NotFoundException;
-import com.auth.model.User;
-import com.auth.repository.UserRepository;
-import com.auth.security.JwtService;
+import com.auth.dto.RegisterRequest;
+import com.auth.service.AuthServiceImpl;
+
+import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+	
 	@Autowired
-	UserRepository userRepository;
-	@Autowired
-    PasswordEncoder passwordEncoder;
-	@Autowired
-	JwtService jwtService;
+	AuthServiceImpl authService;
 	
 	@PostMapping("/register")
-	public ResponseEntity<Void> register(@RequestBody User user) {
-		Optional<User> users=userRepository.findByEmail(user.getEmail());
-		if(!users.isEmpty()) {
-			throw new BadRequestException("Email Already Exists");
-		}
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-	    userRepository.save(user);
+	public ResponseEntity<Void> register(@RequestBody @Valid RegisterRequest request) {
+	    authService.register(request);
 		return ResponseEntity.status(201).build();
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<Map<String,String>> login(@RequestBody LoginRequest request){
-		Optional<User> users=userRepository.findByEmail(request.getEmail());
-		if(users.isEmpty()) {
-			throw new NotFoundException();
-		}
-		if (!passwordEncoder.matches(request.getPassword(), users.get().getPassword())) {
-            throw new BadRequestException("Invalid Credentials");
-        }
-		Map<String,String> responce=new HashMap<>();
-		responce.put("Token",jwtService.generateToken(request.getEmail(),users.get().getRole(),users.get().getHotelId()));
-		responce.put("role", users.get().getRole().toString());
-		responce.put("hotelId", users.get().getHotelId());
+	public ResponseEntity<Map<String,String>> login(@RequestBody @Valid LoginRequest request){
+		Map<String,String> responce = authService.login(request);
 		return ResponseEntity.status(200).body(responce);
 	}
 	
 	@PutMapping("/changePassword")
-	public ResponseEntity<Map<String,String>> chnagePassword(@RequestBody ChangeRequest request){
-		Optional<User> users=userRepository.findByEmail(request.getEmail());
-		if(users.isEmpty()) {
-			throw new NotFoundException();
-		}
-		if (!passwordEncoder.matches(request.getOldPassword(), users.get().getPassword())) {
-            throw new BadRequestException("Invalid Old PassWord");
-        }
-		users.get().setPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(users.get());
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Password updated successfully");
+	public ResponseEntity<Map<String,String>> chnagePassword(@RequestBody @Valid ChangeRequest request){
+        Map<String, String> response = authService.chnagePassword(request);
 		return ResponseEntity.status(200).body(response);
 	}
 	

@@ -30,7 +30,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         if ((path.contains("/auth-service/auth/register") && method == HttpMethod.POST) ||
             (path.contains("/auth-service/auth/login") && method == HttpMethod.POST) ||
             (path.startsWith("/hotel-service/search") && method == HttpMethod.POST) ||
-            (path.matches("/hotel-service/hotel/[^/]+/rooms/available") && method == HttpMethod.POST)) {
+            (path.matches("/hotel-service/hotel/[^/]+/rooms/available") && method == HttpMethod.POST) || 
+            (path.contains("/auth-service/auth/changePassword") && method == HttpMethod.PUT)) {
             return chain.filter(exchange);
         }
 
