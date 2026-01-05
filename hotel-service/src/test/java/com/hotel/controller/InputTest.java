@@ -16,7 +16,7 @@ import com.hotel.dto.InventoryRequest;
 import com.hotel.dto.UpdateHotelRequest;
 @SpringBootTest
 @AutoConfigureMockMvc
-public class InputTest {
+class InputTest {
 	@Autowired
     private MockMvc mockMvc;
 	

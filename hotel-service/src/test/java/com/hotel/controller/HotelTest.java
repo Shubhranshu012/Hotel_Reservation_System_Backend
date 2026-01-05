@@ -17,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -30,8 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(properties = "eureka.client.enabled=false")
-public class HotelTest {
+class HotelTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -70,10 +68,25 @@ public class HotelTest {
         Mockito.when(roomRepository.findByIdAndHotelId(anyString(), anyString())).thenReturn(java.util.Optional.of(room));
         Mockito.when(bookingFeignClient.getBookedRooms(anyString(), any(LocalDate.class), any(LocalDate.class))).thenReturn(Collections.emptyList());
     }
+
+    RoomRequest getRoomRequest() {
+    	RoomRequest request = new RoomRequest();
+    	request.setPrice(5120.0);
+    	request.setRoomNumber("1011");
+    	request.setStatus(RSTATUS.AVAILABLE);
+    	request.setType(RTYPE.SUITE);
+        return request;
+    }
     
+    RoomAvailabilityRequest getAvaliableRequest() {
+    	RoomAvailabilityRequest request = new RoomAvailabilityRequest();
+        request.setCheckIn(LocalDate.now());
+        request.setCheckOut(LocalDate.now().plusDays(1));
+        return request;
+    }
 
     @Test
-    void testAddHotel() throws Exception {
+    void addHotel() throws Exception {
         InventoryRequest request = new InventoryRequest();
         request.setHotelName("New Hotel");
         request.setCity("New City");
@@ -85,9 +98,8 @@ public class HotelTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
     }
-
     @Test
-    void testUpdateHotel() throws Exception {
+    void updateHotel() throws Exception {
         UpdateHotelRequest request = new UpdateHotelRequest();
         request.setHotelName("Updated Hotel");
 
@@ -98,19 +110,19 @@ public class HotelTest {
     }
 
     @Test
-    void testDeleteHotel() throws Exception {
+    void deleteHotel() throws Exception {
         mockMvc.perform(delete("/hotel/hotel1"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void testGetAllHotels() throws Exception {
+    void getAllHotels() throws Exception {
         mockMvc.perform(get("/hotel/all"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void testGetAllHotels_EmptyList() throws Exception {
+    void badGetAllHotels() throws Exception {
         Mockito.when(hotelRepository.findAll()).thenReturn(Collections.emptyList());
         Mockito.when(bookingFeignClient.getBookedRooms(anyString(), any(LocalDate.class), any(LocalDate.class))).thenThrow(new NotFoundException());
 
@@ -118,26 +130,30 @@ public class HotelTest {
                 .andExpect(status().isNotFound());
     }
 
-    
-
     @Test
-    void testAddRooms() throws Exception {
-        RoomRequest newRoom = new RoomRequest();
-        newRoom.setPrice(5120.0);
-        newRoom.setRoomNumber("1011");
-        newRoom.setStatus(RSTATUS.AVAILABLE);
-        newRoom.setType(RTYPE.SUITE);
-
-        List<RoomRequest> requests = Arrays.asList(newRoom);
+    void addRooms() throws Exception {
+    	Mockito.when(roomRepository.existsByHotelIdAndRoomNumber("hotel1", "1011")).thenReturn(false);
+       
+        List<RoomRequest> requests = Arrays.asList(getRoomRequest());
 
         mockMvc.perform(post("/hotel/hotel1/room")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requests)))
                 .andExpect(status().isCreated());
     }
-
     @Test
-    void testUpdateRooms() throws Exception {
+    void badAddRooms() throws Exception {
+    	Mockito.when(roomRepository.existsByHotelIdAndRoomNumber("hotel1", "1011")).thenReturn(true);
+
+        List<RoomRequest> requests = Arrays.asList(getRoomRequest());
+
+        mockMvc.perform(post("/hotel/hotel1/room")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requests)))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    void updateRooms() throws Exception {
         UpdateRoomRequest request = new UpdateRoomRequest();
         request.setPrice(4000.0);
         request.setStatus(RSTATUS.MAINTENANCE);
@@ -150,13 +166,13 @@ public class HotelTest {
     }
 
     @Test
-    void testGetRoom() throws Exception {
+    void getRoom() throws Exception {
         mockMvc.perform(get("/hotel/hotel1/room/room1"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void testGetRoom_NotFound() throws Exception {
+    void badGetRoom() throws Exception {
         Mockito.when(roomRepository.findByIdAndHotelId(anyString(), anyString())).thenReturn(java.util.Optional.empty());
 
         mockMvc.perform(get("/hotel/hotel134/room/INVALID"))
@@ -165,7 +181,7 @@ public class HotelTest {
 
 
     @Test
-    void testSearchHotels() throws Exception {
+    void searchHotels() throws Exception {
         HotelSearchRequest request = new HotelSearchRequest();
         request.setCity("Test City");
         request.setCheckIn(LocalDate.now());
@@ -179,29 +195,22 @@ public class HotelTest {
     }
 
     @Test
-    void testGetAvailableRooms() throws Exception {
-        RoomAvailabilityRequest request = new RoomAvailabilityRequest();
-        request.setCheckIn(LocalDate.now());
-        request.setCheckOut(LocalDate.now().plusDays(1));
+    void getAvailableRooms() throws Exception {
 
         mockMvc.perform(post("/hotel/hotel1/rooms/available")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(getAvaliableRequest())))
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void testGetAvailableRooms_Empty() throws Exception {
-
-        RoomAvailabilityRequest request = new RoomAvailabilityRequest();
-        request.setCheckIn(LocalDate.now());
-        request.setCheckOut(LocalDate.now().plusDays(1));
+    @Test 
+    void badGetAvailableRooms() throws Exception {
 
         Mockito.when(roomRepository.findByHotelId(anyString())).thenReturn(Collections.emptyList());
 
         mockMvc.perform(post("/hotel/hotel14/rooms/available")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(getAvaliableRequest())))
                 .andExpect(status().isOk());
     }
 }

@@ -1,6 +1,6 @@
 package com.hotel.service;
 
-import java.util.List;
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +46,6 @@ public class RoomServiceImpl implements RoomService {
 		return roomRepository.save(room);
 	}
 
-	@Override
-	public List<Room> getRoomsByHotel(String hotelId) {
-		return roomRepository.findByHotelId(hotelId);
-	}
 
 	@Override
 	public void updateRoom(String hotelId, String roomId, UpdateRoomRequest request) {
@@ -97,7 +93,7 @@ public class RoomServiceImpl implements RoomService {
 		if(room.isEmpty()) {
 			throw new NotFoundException();
 		}
-		if(request.getCheckIn()==true) {
+		if(request.getCheckIn()) {
 			if(room.get().getStatus()==RSTATUS.OCCUPIED) {
 				throw new BadRequestException("Room Already Checked In");
 			}
