@@ -24,6 +24,10 @@ public class Reservation {
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private Double price;
+    private String hotelName;
 
     private RSTATUS status;
+
+    private boolean checkInReminderSent = false;
+    private boolean checkOutReminderSent = false;
 }

@@ -108,7 +108,7 @@ class BookingServiceImplTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
+    @Test 
     void CancelBooking_Success() throws Exception{
         Mockito.when(reservationRepository.findById("res1")).thenReturn(Optional.of(existingReservation));
         

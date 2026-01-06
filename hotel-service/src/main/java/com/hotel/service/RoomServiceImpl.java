@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.hotel.dto.CheckInRequest;
 import com.hotel.dto.RoomRequest;
+import com.hotel.dto.RoomResponce;
 import com.hotel.dto.UpdateRoomRequest;
 import com.hotel.exception.BadRequestException;
 import com.hotel.exception.NotFoundException;
@@ -85,6 +86,21 @@ public class RoomServiceImpl implements RoomService {
 	public Room getRoom(String hotelId, String roomId) {
 		return roomRepository.findByIdAndHotelId(roomId, hotelId)
 				.orElseThrow(() -> new NotFoundException());
+	}
+	@Override
+	public RoomResponce getRoomInternal(String hotelId, String roomId) {
+	    Hotels hotels = validateActiveHotel(hotelId);
+	    RoomResponce responce = new RoomResponce();
+	    responce.setHotelId(hotelId);
+	    responce.setHotelName(hotels.getHotelName());
+	    
+	    Room room = roomRepository.findByIdAndHotelId(roomId, hotelId).orElseThrow(() -> new NotFoundException());
+	    responce.setId(room.getId());
+	    responce.setRoomNumber(room.getRoomNumber());
+	    responce.setStatus(room.getStatus());
+	    responce.setType(room.getType());
+	    responce.setPrice(room.getPrice());
+	    return responce;
 	}
 	@Override
 	public void CheckInCheckOut(String hotelId, String roomId,CheckInRequest request,String bookingId) {

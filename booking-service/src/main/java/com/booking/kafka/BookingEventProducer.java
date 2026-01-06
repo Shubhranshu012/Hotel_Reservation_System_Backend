@@ -26,9 +26,7 @@ public class BookingEventProducer {
     public void sendEvent(BookingEvent event) {
         try {
             String message = mapper.writeValueAsString(event);
-            kafkaTemplate
-                    .send(TOPIC, event.getReservationId(), message)
-                    .get();
+            kafkaTemplate.send(TOPIC, event.getReservationId(), message).get();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

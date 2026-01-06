@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+
 @ControllerAdvice
 public class GlobalErrorHandler {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -30,7 +31,12 @@ public class GlobalErrorHandler {
         error.put("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST); 
     }
-	 
+	@ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<Map<String, String>> handleServiceUnavailableException(ServiceUnavailableException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE); 
+    }
 	@ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Void> handleResourceNotFound(NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

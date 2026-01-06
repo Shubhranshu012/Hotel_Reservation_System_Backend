@@ -32,6 +32,14 @@ public class BookingNotificationConsumer {
             if ("BOOKING_CANCELLED".equals(eventType)) {
                 handleBookingCancelled(event, email);
             }
+            if ("CHECK_IN_REMINDER".equals(eventType)) {
+            	sendCheckInReminder(event, email);
+            }
+
+            if ("CHECK_OUT_REMINDER".equals(eventType)) {
+            	sendCheckOutReminder(event, email);
+            }
+            
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,5 +68,27 @@ public class BookingNotificationConsumer {
                 "Room ID: " + event.get("roomId");
 
         emailService.sendEmail(email, "Booking Cancelled", body);
+    }
+    private void sendCheckInReminder(Map<String, String> event, String email) {
+        String body =
+                "Reminder: Your check-in is tomorrow! ✅\n\n" +
+                "Reservation ID: " + event.get("reservationId") + "\n" +
+                "Hotel ID: " + event.get("hotelId") + "\n" +
+                "Room ID: " + event.get("roomId") + "\n" +
+                "Check-in: " + event.get("checkIn") + "\n" +
+                "Check-out: " + event.get("checkOut");
+
+        emailService.sendEmail(email, "Check-in Reminder", body);
+    }
+    private void sendCheckOutReminder(Map<String, String> event, String email) {
+        String body =
+                "Reminder: Your check-out is tomorrow! ❌\n\n" +
+                "Reservation ID: " + event.get("reservationId") + "\n" +
+                "Hotel ID: " + event.get("hotelId") + "\n" +
+                "Room ID: " + event.get("roomId") + "\n" +
+                "Check-in: " + event.get("checkIn") + "\n" +
+                "Check-out: " + event.get("checkOut");
+
+        emailService.sendEmail(email, "Check-out Reminder", body);
     }
 }

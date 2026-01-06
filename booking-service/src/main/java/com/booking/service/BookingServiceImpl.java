@@ -60,6 +60,7 @@ public class BookingServiceImpl implements BookingService {
 		reservation.setGuestEmail(request.getGuestEmail());
 		reservation.setCheckInDate(request.getCheckInDate());
 		reservation.setCheckOutDate(request.getCheckOutDate());
+		reservation.setHotelName(room.getHotelName());
 		
 		long diffInDays = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
 		reservation.setStatus(RSTATUS.BOOKED);
@@ -69,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
 		BookingEvent event = new BookingEvent();
 		event.setEventType("BOOKING_CONFIRMED");
 		event.setReservationId(reservation.getId());
-		event.setHotelId(reservation.getHotelId());
+		event.setHotelId(reservation.getHotelName());
 		event.setRoomId(reservation.getRoomId());
 		event.setGuestEmail(reservation.getGuestEmail());
 		event.setCheckIn(reservation.getCheckInDate().toString());
@@ -99,7 +100,7 @@ public class BookingServiceImpl implements BookingService {
 		BookingEvent event = new BookingEvent();
 		event.setEventType("BOOKING_CANCELLED");
 		event.setReservationId(reservation.getId());
-		event.setHotelId(reservation.getHotelId());
+		event.setHotelId(reservation.getHotelName());
 		event.setRoomId(reservation.getRoomId());
 		event.setGuestEmail(reservation.getGuestEmail());
 		event.setCheckIn(reservation.getCheckInDate().toString());
