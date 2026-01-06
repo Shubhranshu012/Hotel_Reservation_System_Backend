@@ -4,6 +4,18 @@
 
 The Hotel Reservation System is a comprehensive microservices-based application designed to manage hotel bookings, user authentication, and hotel/room management. Built using Spring Boot and Spring Cloud, it leverages modern cloud-native patterns for scalability and maintainability.
 
+## Features
+
+- **User Authentication & Authorization**: JWT-based authentication with role-based access control (RBAC) for Admin, Manager, Receptionist, and Guest roles.
+- **Hotel & Room Management**: Comprehensive management of hotels, rooms, and availability with support for multiple room types and statuses.
+- **Booking System**: Full booking lifecycle including creation, modification, cancellation, and check-in/check-out.
+- **Automated Scheduling**: Daily automated reminders for upcoming check-ins and check-outs sent at 9 PM IST using Spring Scheduler.
+- **Email Notifications**: SMTP-based email notifications for booking confirmations, check-in/check-out reminders, and updates via Kafka event-driven architecture.
+- **Search & Availability**: Public API for searching hotels and checking room availability based on dates and criteria.
+- **Microservices Architecture**: Scalable design with service discovery, API gateway, and centralized configuration.
+- **Event-Driven Communication**: Asynchronous messaging using Kafka for decoupled service interactions.
+- **Containerization**: Docker support for easy deployment and environment consistency.
+
 ## Architecture
 
 The system follows a microservices architecture with the following components:
