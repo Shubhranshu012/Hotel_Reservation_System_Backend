@@ -36,7 +36,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
+        System.out.println("AuthHeader: " + authHeader);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("No valid Authorization header");
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
@@ -50,8 +52,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             role = jwtUtil.extractRole(token);
             hotelId = jwtUtil.extractHotelId(token);
             Email=jwtUtil.extractEmail(token);
-            System.out.println("Role: " + role + ", HotelId: " + hotelId);
+            System.out.println("Extracted - Role: " + role + ", HotelId: " + hotelId + ", Email: " + Email);
         } catch (Exception e) {
+            System.out.println("Exception extracting from token: " + e.getMessage());
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
@@ -85,7 +88,20 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                 }
             }
         }
-
+        //Add Rooms
+        if(path.matches("/hotel-service/hotel/[^/]+/room") && method==HttpMethod.POST && role.equals("MANAGER")){
+        	String[] parts=path.split("/");
+        	String hotelIdFromPath = parts[3];
+        	System.out.println("Add Rooms - Path matches, role MANAGER, hotelIdFromPath: " + hotelIdFromPath + ", token hotelId: " + hotelId);
+        	if (hotelIdFromPath.equals(hotelId)) {
+                System.out.println("Authorized for add rooms");
+                return chain.filter(exchange);
+            } else {
+                System.out.println("Forbidden: hotelId mismatch");
+                exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                return exchange.getResponse().setComplete();
+            }
+        }
         //Get all rooms (MANAGER or RECEPTIONIST for own hotel)
         if (path.matches("/hotel-service/rooms/[^/]+") && method == HttpMethod.GET &&
             (role.equals("MANAGER") || role.equals("RECEPTIONIST"))) {
@@ -174,11 +190,12 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                     return exchange.getResponse().setComplete();
             	}
             }
-        // Internal 
+        // Internal
         if (path.startsWith("/booking-service/api/booking/booked-rooms") || path.matches("/hotel-service/hotel/[^/]+/room/[^/]+") || path.matches("/booking-service/api/booking/checkin/[^/]+")) {
             return chain.filter(exchange);
         }
-        
+
+        System.out.println("No matching route found, returning 403 Forbidden for path: " + path + ", method: " + method + ", role: " + role);
         exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
         return exchange.getResponse().setComplete();
     }

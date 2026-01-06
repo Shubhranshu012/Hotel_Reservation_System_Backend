@@ -35,9 +35,10 @@ public class InternalAuthImpl implements InternalAuth{
 			throw new BadRequestException("Email Already Exists");
 		}
 		User user = new User();
+		user.setEmail(request.getEmail());
 		user.setHotelId(hotelId);
 		user.setRole(ROLE.MANAGER);
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		user.setPassword(passwordEncoder.encode(request.getPassword()));
 	    userRepository.save(user);
 	}
 	@Override
@@ -52,8 +53,9 @@ public class InternalAuthImpl implements InternalAuth{
 		}
 		User user = new User();
 		user.setHotelId(hotelId);
+		user.setEmail(request.getEmail());
 		user.setRole(ROLE.RECEPTIONIST);
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		user.setPassword(passwordEncoder.encode(request.getPassword()));
 	    userRepository.save(user);
 	}
 }
