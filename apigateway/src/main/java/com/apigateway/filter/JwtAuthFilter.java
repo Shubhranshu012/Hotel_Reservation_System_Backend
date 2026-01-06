@@ -24,10 +24,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
         String path = exchange.getRequest().getURI().getPath();
         HttpMethod method = exchange.getRequest().getMethod();
-        System.out.println("Request Path: " + path);
 
         //Public routes
-        if ((path.contains("/auth-service/auth/register") && method == HttpMethod.POST) ||
+        if ((path.matches("/auth-service/auth/register") && method == HttpMethod.POST) ||
             (path.contains("/auth-service/auth/login") && method == HttpMethod.POST) ||
             (path.startsWith("/hotel-service/search") && method == HttpMethod.POST) ||
             (path.matches("/hotel-service/hotel/[^/]+/rooms/available") && method == HttpMethod.POST) || 
@@ -36,9 +35,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
-        System.out.println("AuthHeader: " + authHeader);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("No valid Authorization header");
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
@@ -52,9 +49,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             role = jwtUtil.extractRole(token);
             hotelId = jwtUtil.extractHotelId(token);
             Email=jwtUtil.extractEmail(token);
-            System.out.println("Extracted - Role: " + role + ", HotelId: " + hotelId + ", Email: " + Email);
         } catch (Exception e) {
-            System.out.println("Exception extracting from token: " + e.getMessage());
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
@@ -67,7 +62,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
         //Admin hotel functions
         if ((path.startsWith("/hotel-service/hotel/all") && method == HttpMethod.GET && role.equals("ADMIN")) ||
-            (path.startsWith("/hotel-service/hotel") && method == HttpMethod.POST && role.equals("ADMIN")) ||
+            (path.matches("/hotel-service/hotel") && method == HttpMethod.POST && role.equals("ADMIN")) ||
             (path.matches("/hotel-service/hotel/[^/]+") && method == HttpMethod.DELETE && role.equals("ADMIN"))) {
             return chain.filter(exchange);
         }
@@ -92,12 +87,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         if(path.matches("/hotel-service/hotel/[^/]+/room") && method==HttpMethod.POST && role.equals("MANAGER")){
         	String[] parts=path.split("/");
         	String hotelIdFromPath = parts[3];
-        	System.out.println("Add Rooms - Path matches, role MANAGER, hotelIdFromPath: " + hotelIdFromPath + ", token hotelId: " + hotelId);
         	if (hotelIdFromPath.equals(hotelId)) {
-                System.out.println("Authorized for add rooms");
                 return chain.filter(exchange);
             } else {
-                System.out.println("Forbidden: hotelId mismatch");
                 exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                 return exchange.getResponse().setComplete();
             }
@@ -137,12 +129,10 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         if (path.matches("/booking-service/api/booking/booking/[^/]+/?") && method == HttpMethod.GET &&
             (role.equals("MANAGER") || role.equals("RECEPTIONIST"))) {
             String[] parts = path.split("/");
-            String hotelIdFromPath = parts[parts.length - 1]; // safer than hard-coded index
+            String hotelIdFromPath = parts[parts.length - 1];
             if (hotelIdFromPath.equals(hotelId)) {
-                System.out.println("Authorized " + role + " for hotelId " + hotelIdFromPath);
                 return chain.filter(exchange);
             } else {
-                System.out.println(hotelIdFromPath + " Mismatch");
                 exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                 return exchange.getResponse().setComplete();
             }
@@ -195,7 +185,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        System.out.println("No matching route found, returning 403 Forbidden for path: " + path + ", method: " + method + ", role: " + role);
         exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
         return exchange.getResponse().setComplete();
     }

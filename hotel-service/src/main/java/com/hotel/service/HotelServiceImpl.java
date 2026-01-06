@@ -37,7 +37,7 @@ public class HotelServiceImpl implements HotelService {
 			throw new BadRequestException("Hotel Exists With the Same name and Address");
 		}
 		Hotels hotel = Hotels.builder().hotelName(request.getHotelName()).city(request.getCity())
-				.address(request.getAddress()).numberOfRooms(request.getNumberOfRooms()).status(HSTATUS.ACTIVE).booked(0).build();
+				.address(request.getAddress()).numberOfRooms(0).status(HSTATUS.ACTIVE).booked(0).build();
 
 		hotelRepository.save(hotel);
 

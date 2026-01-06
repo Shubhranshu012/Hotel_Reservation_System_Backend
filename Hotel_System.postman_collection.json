@@ -1,0 +1,397 @@
+{
+	"info": {
+		"_postman_id": "51dbede8-8d99-4e38-92bf-1410b8783c38",
+		"name": "Hotel_System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49371517"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"shubhranshu.satpathy@gmail.com\",\r\n    \"password\":\"Happy@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/auth-service/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"auth-service",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"shubhranshu.satpathy@gmail.com\",\r\n    \"password\":\"Happy@123\",\r\n    \"confirmPassword\":\"Happy@123\",\r\n    \"role\":\"GUEST\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/auth-service/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"auth-service",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"shubhranshu.satpathy@gmail.com\",\r\n  \"oldPassword\": \"Happy@123\",\r\n  \"newPassword\": \"Happy@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/auth-service/auth/changePassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"auth-service",
+								"auth",
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Manager",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaHViaHJhbnNodS5NYW5hZ2VyQGdtYWlsLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiaG90ZWxJZCI6IjY5NWJlZjU2MmE5NmEyMThmNGNjYWZlOCIsImlhdCI6MTc2NzcwOTY1NCwiZXhwIjoxNzY3Nzk2MDU0fQ.mVvf6cvRvY6FAa9jKb9LqDvnuJ3qzhQ1OnfR8EpBngs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"shubhranshu.Manager@gmail.com\",\r\n    \"password\":\"Manager@123\",\r\n    \"confirmPassword\":\"Manager@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/auth-service/auth/register/manager/695bef562a96a218f4ccafe8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"auth-service",
+								"auth",
+								"register",
+								"manager",
+								"695bef562a96a218f4ccafe8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Receptionist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaHViaHJhbnNodS5NYW5hZ2VyQGdtYWlsLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiaG90ZWxJZCI6IjY5NWJlZjU2MmE5NmEyMThmNGNjYWZlOCIsImlhdCI6MTc2NzcwOTY1NCwiZXhwIjoxNzY3Nzk2MDU0fQ.mVvf6cvRvY6FAa9jKb9LqDvnuJ3qzhQ1OnfR8EpBngs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"shubhranshu.Recp@gmail.com\",\r\n    \"password\":\"Recp@123\",\r\n    \"confirmPassword\":\"Recp@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/auth-service/auth/register/receptionist/695bef562a96a218f4ccafe8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"auth-service",
+								"auth",
+								"register",
+								"receptionist",
+								"695bef562a96a218f4ccafe8"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hotel",
+			"item": [
+				{
+					"name": "Add Hotel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaHViaHJhbnNodS5BZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3Njc3MDk2MTgsImV4cCI6MTc2Nzc5NjAxOH0.B4PY962FEO3kFhOfnB3UUSh1qixcgGbTp4zPUOcaPAI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"hotelName\": \"Taj Goa\",\r\n  \"city\": \"Goa\",\r\n  \"address\": \"Dona Paula, Vainguinim Plateau, Panaji, Goa 403004\",\r\n  \"numberOfRooms\": 50\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/hotel-service/hotel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"hotel-service",
+								"hotel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Rooms",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaHViaHJhbnNodS5NYW5hZ2VyQGdtYWlsLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiaG90ZWxJZCI6IjY5NWJlZjU2MmE5NmEyMThmNGNjYWZlOCIsImlhdCI6MTc2NzcwOTY1NCwiZXhwIjoxNzY3Nzk2MDU0fQ.mVvf6cvRvY6FAa9jKb9LqDvnuJ3qzhQ1OnfR8EpBngs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"roomNumber\": \"101\",\r\n    \"status\": \"AVAILABLE\",\r\n    \"type\": \"SINGLE\", \r\n    \"price\": 1000.0\r\n  }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/hotel-service/hotel/6954b77af70afe0775060eb2/room",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"hotel-service",
+								"hotel",
+								"6954b77af70afe0775060eb2",
+								"room"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Hotels",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"city\": \"Goa\",\r\n  \"checkIn\": \"2026-01-15\",\r\n  \"checkOut\": \"2024-01-17\",\r\n  \"roomCount\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/hotel-service/search",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"hotel-service",
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Hotels",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaHViaHJhbnNodS5BZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3Njc3MDk2MTgsImV4cCI6MTc2Nzc5NjAxOH0.B4PY962FEO3kFhOfnB3UUSh1qixcgGbTp4zPUOcaPAI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8008/hotel-service/hotel/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"hotel-service",
+								"hotel",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Hotel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaHViaHJhbnNodS5BZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3Njc3MDk2MTgsImV4cCI6MTc2Nzc5NjAxOH0.B4PY962FEO3kFhOfnB3UUSh1qixcgGbTp4zPUOcaPAI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8008/hotel-service/hotel/6954b77af70afe0775060eb2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"hotel-service",
+								"hotel",
+								"6954b77af70afe0775060eb2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Room Avaliable",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"checkIn\":\"2026-01-08\",\r\n    \"checkOut\":\"2026-01-08\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8008/hotel-service/hotel/6954b77af70afe0775060eb2/rooms/available ",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8008",
+					"path": [
+						"hotel-service",
+						"hotel",
+						"6954b77af70afe0775060eb2",
+						"rooms",
+						"available "
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
