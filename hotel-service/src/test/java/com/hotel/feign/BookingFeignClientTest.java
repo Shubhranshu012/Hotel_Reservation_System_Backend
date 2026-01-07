@@ -27,6 +27,6 @@ class BookingFeignClientTest {
         ServiceUnavailableException exception = assertThrows(ServiceUnavailableException.class, () -> {
             client.fallbackGetBookedRooms("hotel123", LocalDate.now(), LocalDate.now().plusDays(1), new Throwable("Test"));
         });
-        assertEquals("Booking service is unavailable", exception.getMessage());
+        assertEquals("Booking service is currently unavailable. Please try again later.", exception.getMessage());
     }
 }

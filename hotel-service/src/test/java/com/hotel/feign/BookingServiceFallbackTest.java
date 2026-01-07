@@ -18,7 +18,7 @@ class BookingServiceFallbackTest {
         ServiceUnavailableException exception = assertThrows(ServiceUnavailableException.class, () -> {
             fallback.getBookedRooms("hotel123", LocalDate.now(), LocalDate.now().plusDays(1));
         });
-        assertEquals("Booking service is unavailable", exception.getMessage());
+        assertEquals("Booking service is currently unavailable. Please try again later.", exception.getMessage());
     }
 
     @Test
@@ -27,6 +27,6 @@ class BookingServiceFallbackTest {
         ServiceUnavailableException exception = assertThrows(ServiceUnavailableException.class, () -> {
             fallback.checkIn("booking123", request);
         });
-        assertEquals("Booking service is unavailable", exception.getMessage());
+        assertEquals("Booking service is currently unavailable. Please try again later.", exception.getMessage());
     }
 }
