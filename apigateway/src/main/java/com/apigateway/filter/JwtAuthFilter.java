@@ -56,7 +56,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
         //Register routes
         if ((path.matches("/auth-service/auth/register/manager/[^/]+") && method == HttpMethod.POST && role.equals("ADMIN")) ||
-            (path.matches("/auth-service/auth/register/receptionist/[^/]+") && method == HttpMethod.POST && role.equals("RECEPTIONIST"))) {
+            (path.matches("/auth-service/auth/register/receptionist/[^/]+") && method == HttpMethod.POST && role.equals("MANAGER"))) {
             return chain.filter(exchange);
         }
 
