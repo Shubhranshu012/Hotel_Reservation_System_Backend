@@ -36,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public BookingResponse createBooking(BookingRequest request,String hotelId) {
 		if(request.getCheckInDate().isAfter(request.getCheckOutDate())) {
-			throw new BadRequestException("CheckOut Shouild be After CheckIn");
+			throw new BadRequestException("CheckOut Should be After CheckIn");
 		}
 		RoomResponse room;
 		try {
@@ -140,6 +140,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void checkInCheckOut(String reservationId,CheckInRequest checkInRequest) {
     	Reservation existingReservation = repository.findById(reservationId).orElseThrow(NotFoundException::new);
+    	if (existingReservation.getCheckInDate().isAfter(LocalDate.now())) {
+    	    throw new BadRequestException("Check-in date is in the future");
+    	}
     	if(existingReservation.getStatus() == RSTATUS.BOOKED) {
     		if(checkInRequest.getCheckIn()) {
     			existingReservation.setStatus(RSTATUS.CHECKED_IN);
