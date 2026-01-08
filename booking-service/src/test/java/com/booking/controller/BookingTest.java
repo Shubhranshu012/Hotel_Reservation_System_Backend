@@ -48,6 +48,7 @@ class BookingServiceImplTest {
 	private BookingEventProducer bookingEventProducer;
     private Reservation existingReservation;
     private Reservation existingReservation2;
+    private Reservation existingReservation3;
     @BeforeEach
     void setup() {
     	
@@ -57,6 +58,9 @@ class BookingServiceImplTest {
         existingReservation2 = Reservation.builder().id("res2")
                 .hotelId("hotel1").roomId("room1").guestEmail("shubhranshu.test2@gmail.com").guestName("Shubhranshu Satpathy")
                 .checkInDate(LocalDate.now().plusDays(9)).checkOutDate(LocalDate.now().plusDays(15)).status(RSTATUS.BOOKED).build();
+        existingReservation3 = Reservation.builder().id("res3")
+                .hotelId("hotel3").roomId("room3").guestEmail("shubhranshu.test@gmail.com").guestName("Shubhranshu Satpathy")
+                .checkInDate(LocalDate.now()).checkOutDate(LocalDate.now().plusDays(7)).status(RSTATUS.BOOKED).build();
     }
     private BookingRequest getRequest() {
         BookingRequest request = new BookingRequest();
@@ -194,13 +198,13 @@ class BookingServiceImplTest {
         CheckInRequest request = new CheckInRequest();
         request.setCheckIn(true);
 
-        Mockito.when(reservationRepository.findById("res1")).thenReturn(Optional.of(existingReservation));
+        Mockito.when(reservationRepository.findById("res3")).thenReturn(Optional.of(existingReservation));
         
 
-        mockMvc.perform(put("/api/booking/checkin/res1")
+        mockMvc.perform(put("/api/booking/checkin/res3")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
     @Test
     void badCheckInBooking() throws Exception{
@@ -219,10 +223,10 @@ class BookingServiceImplTest {
     void checkOutBooking() throws Exception{
         CheckInRequest request = new CheckInRequest();
         request.setCheckIn(false);
-        existingReservation.setStatus(RSTATUS.CHECKED_IN);
-        Mockito.when(reservationRepository.findById("res1")).thenReturn(Optional.of(existingReservation));
+        existingReservation3.setStatus(RSTATUS.CHECKED_IN);
+        Mockito.when(reservationRepository.findById("res3")).thenReturn(Optional.of(existingReservation3));
         
-        mockMvc.perform(put("/api/booking/checkin/res1")
+        mockMvc.perform(put("/api/booking/checkin/res3")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());

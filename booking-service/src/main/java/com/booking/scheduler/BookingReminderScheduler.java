@@ -29,7 +29,7 @@ public class BookingReminderScheduler {
     BookingEventProducer bookingEventProducer;
 
     
-	@Scheduled(cron = "0 0 21 * * *", zone = "Asia/Kolkata")
+	@Scheduled(cron = "0 10 22 * * *", zone = "Asia/Kolkata")
     public void sendCheckInReminders() {
 
         LocalDate nextDay = LocalDate.now().plusDays(1);
@@ -43,8 +43,8 @@ public class BookingReminderScheduler {
             event.setHotelId(reservation.getHotelName());
             event.setRoomId(reservation.getRoomId());
             event.setGuestEmail(reservation.getGuestEmail());
-            event.setCheckInDate(reservation.getCheckInDate());
-            event.setCheckOutDate(reservation.getCheckOutDate());
+            event.setCheckIn(reservation.getCheckInDate().toString());
+            event.setCheckOut(reservation.getCheckOutDate().toString());
 
             bookingEventProducer.sendEvent(event);
 
@@ -55,7 +55,7 @@ public class BookingReminderScheduler {
     }
 
  
-	@Scheduled(cron = "0 0 21 * * *", zone = "Asia/Kolkata")
+	@Scheduled(cron = "0 10 22  * * *", zone = "Asia/Kolkata")
     public void sendCheckOutReminders() {
 
         LocalDate nextDay = LocalDate.now().plusDays(1);
@@ -69,8 +69,8 @@ public class BookingReminderScheduler {
             event.setHotelId(reservation.getHotelName());
             event.setRoomId(reservation.getRoomId());
             event.setGuestEmail(reservation.getGuestEmail());
-            event.setCheckInDate(reservation.getCheckInDate());
-            event.setCheckOutDate(reservation.getCheckOutDate());
+            event.setCheckIn(reservation.getCheckInDate().toString());
+            event.setCheckOut(reservation.getCheckOutDate().toString());
 
             bookingEventProducer.sendEvent(event);
 

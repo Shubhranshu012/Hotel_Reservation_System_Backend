@@ -12,12 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import com.booking.dto.BookingEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class BookingEventProducerTest {
 
     @Mock
@@ -27,9 +29,10 @@ class BookingEventProducerTest {
     private BookingEventProducer bookingEventProducer;
 
     private BookingEvent bookingEvent;
-
+    private ObjectMapper mapper;
     @BeforeEach
     void setUp() {
+    	bookingEventProducer.setMapper(new ObjectMapper());  
         bookingEvent = new BookingEvent();
         bookingEvent.setReservationId("123");
         bookingEvent.setEventType("TEST_EVENT");

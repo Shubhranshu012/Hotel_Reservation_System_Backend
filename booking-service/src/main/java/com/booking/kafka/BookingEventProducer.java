@@ -20,7 +20,11 @@ public class BookingEventProducer {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper mapper;
+    void setMapper(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
 
     @CircuitBreaker(name = CB_NAME, fallbackMethod = "kafkaFallback")
     public void sendEvent(BookingEvent event) {
